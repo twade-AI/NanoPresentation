@@ -11,6 +11,7 @@
 :root{
   --ink:#262338;
   --terra:#D9733F;
+  --terra-text:#A65422;          /* deeper terracotta for small labels (AA contrast) */
   --teal:#2F8F83;
   --muted:#6E6A82;
   --line:#D9D6E2;
@@ -98,8 +99,6 @@ main{ display:block; }
 .screen.center{ justify-content:center; }
 .screen.center .screen-inner{ flex:0 0 auto; }
 
-.eyebrow{ color:var(--terra); font-weight:700; letter-spacing:.06em;
-  text-transform:uppercase; font-size:.78rem; margin:0 0 .5rem; }
 .lede{ color:var(--ink); font-size:1.08rem; max-width:54ch; }
 .lede.big{ font-size:clamp(1.15rem,1rem + 1vw,1.5rem); line-height:1.4; max-width:32ch; }
 .hint{ color:var(--muted); font-size:.92rem; max-width:54ch; }
@@ -127,8 +126,8 @@ main{ display:block; }
 .welcome-logos{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
   gap:clamp(1.25rem,5vw,3rem); }
 .welcome-logo{ width:auto; display:block; }
-.welcome-logo-hby{ height:clamp(58px,11vw,92px); }
-.welcome-logo-pedtech{ height:clamp(116px,24vw,196px); }
+.welcome-logo-hby{ height:clamp(52px,11vw,80px); }
+.welcome-logo-pedtech{ height:clamp(52px,11vw,80px); }
 .welcome-title{ margin:0 auto; max-width:min(560px,100%); }
 .welcome-title-img{ width:100%; height:auto; display:block; }
 .nav-foot{
@@ -194,7 +193,7 @@ main{ display:block; }
 .diamond-stage.complete .diamond{ --cardw:clamp(104px,30vw,200px); --cardh:clamp(104px,30vw,168px); }
 .d-row{ display:flex; gap:var(--gap); justify-content:center; }
 .d-label{ font-size:.8rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-.d-label.d-top{ color:var(--terra); margin-bottom:.2rem; }
+.d-label.d-top{ color:var(--terra-text); margin-bottom:.2rem; }
 .d-label.d-bottom{ color:var(--muted); margin-top:.2rem; }
 .slot{
   width:var(--cardw); height:var(--cardh);
@@ -212,7 +211,7 @@ main{ display:block; }
 .readback{ margin-top:1.25rem; display:flex; flex-direction:column; gap:.5rem; }
 .tier{ display:flex; gap:.75rem; align-items:baseline; padding:.7rem .9rem;
   background:#fff; border:1px solid var(--line); border-radius:12px; }
-.tier-label{ flex:0 0 8.5rem; color:var(--terra); font-weight:700; font-size:.85rem;
+.tier-label{ flex:0 0 8.5rem; color:var(--terra-text); font-weight:700; font-size:.85rem;
   text-transform:uppercase; letter-spacing:.04em; }
 .tier-items{ display:flex; flex-wrap:wrap; gap:.4rem; }
 .tier-just{ flex-basis:100%; color:var(--muted); font-style:italic; font-size:.9rem; margin:.3rem 0 0; }
@@ -231,14 +230,6 @@ main{ display:block; }
 .cap-form input:focus{ outline:3px solid var(--teal); outline-offset:1px; border-color:var(--teal); }
 .dictate-hint{ margin-top:.4rem; }
 .mic-ico{ vertical-align:-2px; margin-right:.25rem; color:var(--muted); }
-.count{ color:var(--terra); font-weight:600; }
-.cap-list{ list-style:none; margin:.75rem 0 0; padding:0; display:flex; flex-direction:column; gap:.5rem; }
-.cap-item{ display:flex; align-items:center; justify-content:space-between; gap:.75rem;
-  background:var(--warm); border:1px solid #EAD8CC; border-radius:12px; padding:.6rem .9rem; }
-.cap-text{ font-weight:600; }
-.cap-del{ flex:none; width:34px; height:34px; border-radius:50%; border:1px solid #E2C6B4;
-  background:#fff; color:var(--terra); font-size:1.25rem; line-height:1; cursor:pointer; }
-.cap-del:hover{ background:var(--terra); color:#fff; border-color:var(--terra); }
 #outline-need{ margin-top:.9rem; }
 
 /* Tag selector + the figure that entries gather around */
@@ -263,7 +254,7 @@ main{ display:block; }
 .zone-values .zone-chips{ justify-content:flex-end; }
 .zone-skills .zone-chips{ justify-content:flex-start; }
 .zone-label{ font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin:0 0 .4rem; }
-.zone-values .zone-label{ color:var(--terra); text-align:right; }
+.zone-values .zone-label{ color:var(--terra-text); text-align:right; }
 .zone-skills .zone-label{ color:var(--ink); }
 .zone-both .zone-label{ color:var(--muted); text-align:center; }
 
@@ -317,7 +308,7 @@ main{ display:block; }
 .both-list{ display:flex; flex-direction:column; gap:.6rem; margin-top:1.5rem; }
 .both-card{ background:var(--warm); border:1px solid #EAD8CC; border-radius:14px;
   padding:.9rem 1.1rem; font-weight:700; font-size:1.05rem; }
-.answer{ color:var(--terra); font-weight:700; font-size:clamp(1.05rem,1rem + .5vw,1.25rem);
+.answer{ color:var(--terra-text); font-weight:700; font-size:clamp(1.05rem,1rem + .5vw,1.25rem);
   max-width:34ch; margin:1.25rem 0 0; }
 .example{ color:var(--muted); font-style:italic; font-size:.92rem; line-height:1.5;
   max-width:46ch; margin:1rem 0 0; }
@@ -342,7 +333,7 @@ main{ display:block; }
 .badge-none{ color:var(--muted); }
 .consider{ background:var(--warm); border:1px solid #EAD8CC; border-radius:14px;
   padding:1rem 1.2rem; margin:0 0 1.5rem; }
-.consider-label{ color:var(--terra); font-weight:700; text-transform:uppercase;
+.consider-label{ color:var(--terra-text); font-weight:700; text-transform:uppercase;
   letter-spacing:.05em; font-size:.8rem; margin:0 0 .5rem; }
 .consider ul{ margin:0; padding-left:1.15rem; }
 .consider li{ margin:.35rem 0; }
@@ -353,9 +344,9 @@ main{ display:block; }
 .mini-card{ display:inline-flex; align-items:center; gap:.55rem; align-self:flex-start;
   background:#fff; border:1px solid var(--line); border-radius:12px; padding:.5rem .8rem;
   box-shadow:var(--shadow-soft); max-width:100%; }
-.mini-tier{ color:var(--terra); font-weight:700; font-size:.7rem; letter-spacing:.05em;
+.mini-tier{ color:var(--terra-text); font-weight:700; font-size:.7rem; letter-spacing:.05em;
   text-transform:uppercase; flex:none; }
-.mini-letter{ color:var(--terra); font-weight:700; flex:none; }
+.mini-letter{ color:var(--terra-text); font-weight:700; flex:none; }
 .mini-title{ font-weight:700; color:var(--ink); }
 .justify-label{ font-weight:600; color:var(--ink); }
 .justify-input{ font:inherit; width:100%; padding:.7em .9em; min-height:84px;
@@ -422,7 +413,7 @@ main{ display:block; }
       <h1 id="w-h" class="welcome-title" tabindex="-1"><img class="welcome-title-img" src="pedtech-welcome.png" alt="Pedtech Partnership Nano Presentation: AI at the heart of the KS3 Curriculum" width="1587" height="863" decoding="async"></h1>
       <div class="welcome-logos">
         <img class="welcome-logo welcome-logo-hby" src="haileybury-logo.png" alt="Haileybury" width="2000" height="1414" decoding="async">
-        <img class="welcome-logo welcome-logo-pedtech" src="pedtech-partnership-stacked.png" alt="The National PedTech Partnership" width="1414" height="2000" decoding="async">
+        <img class="welcome-logo welcome-logo-pedtech" src="pedtech-partnership-logo.jpg" alt="The National PedTech Partnership" width="1208" height="864" decoding="async">
       </div>
       <p class="lede">Thank you for coming to this Nano Presentation! Let's have some great conversations!</p>
       <div class="welcome-actions"><button class="btn btn-primary" id="begin">Begin</button></div>
@@ -501,7 +492,7 @@ main{ display:block; }
       <div class="outline-figure">
         <div class="zone zone-both"><p class="zone-label">Both</p><div class="zone-chips" id="chips-both"></div></div>
         <div class="zone zone-values"><p class="zone-label">Values</p><div class="zone-chips" id="chips-value"></div></div>
-        <img class="figure-img" src="person-outline.png" alt="" aria-hidden="true" width="1414" height="2000" decoding="async">
+        <img class="figure-img" src="person-outline.png" alt="" aria-hidden="true" width="1414" height="2000" loading="lazy" decoding="async">
         <div class="zone zone-skills"><p class="zone-label">Skills</p><div class="zone-chips" id="chips-skill"></div></div>
       </div>
       <p class="hint" id="outline-need">Add at least four to continue.</p>
@@ -980,7 +971,6 @@ main{ display:block; }
       if(b) b.append(chipEl(cap));
     });
     const n = state.capacities.length;
-    const cc = $("#cap-count"); if(cc) cc.textContent = n ? (n + (n === 1 ? " item so far" : " items so far")) : "";
     $("#outline-need").style.display = (n >= 4) ? "none" : "";
     updateOutlineNext();
   }
