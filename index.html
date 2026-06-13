@@ -224,6 +224,8 @@ main{ display:block; }
 }
 .cap-form input.flash{ border-color:var(--terra); background:var(--warm); }
 .cap-form input:focus{ outline:3px solid var(--teal); outline-offset:1px; border-color:var(--teal); }
+.dictate-hint{ margin-top:.4rem; }
+.mic-ico{ vertical-align:-2px; margin-right:.25rem; color:var(--muted); }
 .count{ color:var(--terra); font-weight:600; }
 .cap-list{ list-style:none; margin:.75rem 0 0; padding:0; display:flex; flex-direction:column; gap:.5rem; }
 .cap-item{ display:flex; align-items:center; justify-content:space-between; gap:.75rem;
@@ -370,6 +372,7 @@ main{ display:block; }
     <div class="screen-inner">
       <h1 id="j-h" tabindex="-1">Why those two?</h1>
       <p class="lede">Ranking is the easy part. Justifying is where it gets real. Put your reasoning into words.</p>
+      <p class="hint dictate-hint"><svg class="mic-ico" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="21.5"/></svg>Prefer to speak? Tap the microphone on your keyboard to dictate instead of typing.</p>
       <div class="justify">
         <div class="justify-row">
           <div class="justify-card" id="justify-top-card"></div>
@@ -409,10 +412,11 @@ main{ display:block; }
       <h1 id="o-h" tabindex="-1">The human outline</h1>
       <p class="lede">Forget AI for a moment. Write the characters, skills and values you want a pupil to leave KS3 with.</p>
       <form id="cap-form" class="cap-form" autocomplete="off">
-        <label class="visually-hidden" for="cap-input">Add a character, skill or virtue</label>
+        <label class="visually-hidden" for="cap-input">Add a character, skill or value</label>
         <input id="cap-input" type="text" placeholder="e.g. courage, critical thinking, teamwork" maxlength="60" enterkeyhint="done">
         <button class="btn btn-secondary" type="submit">Add</button>
       </form>
+      <p class="hint dictate-hint"><svg class="mic-ico" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="21.5"/></svg>Prefer to speak? Tap the microphone on your keyboard to dictate instead of typing.</p>
       <p class="hint">One short phrase at a time. Most people get to eight or ten. <span id="cap-count" class="count"></span></p>
       <ul id="cap-list" class="cap-list"></ul>
       <p class="hint" id="outline-need">Add at least four to continue.</p>
