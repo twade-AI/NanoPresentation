@@ -129,8 +129,8 @@ main{ display:block; }
 .welcome-logo{ width:auto; display:block; }
 .welcome-logo-hby{ height:clamp(58px,11vw,92px); }
 .welcome-logo-pedtech{ height:clamp(116px,24vw,196px); }
-.welcome-title{ width:min(540px,100%); margin:0 auto; overflow:hidden; aspect-ratio:1587 / 779; }
-.welcome-title-img{ width:100%; display:block; margin-top:-30.7%; }
+.welcome-title{ margin:0 auto; max-width:min(560px,100%); }
+.welcome-title-img{ width:100%; height:auto; display:block; }
 .nav-foot{
   width:100%; max-width:var(--maxw); margin:1.75rem auto 0;
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
@@ -327,6 +327,19 @@ main{ display:block; }
   text-decoration:none; padding:.85em 1.5em; border-radius:999px; margin:.25rem 0 1.5rem; }
 .cta:hover{ background:#c6612d; }
 .close-tools{ display:flex; flex-wrap:wrap; gap:.7rem; }
+.recap{ margin:.5rem 0 1.5rem; }
+.recap-h{ font-family:var(--serif); font-weight:600; font-size:1.15rem; margin:1.5rem 0 .6rem; }
+.recap-h:first-child{ margin-top:.5rem; }
+.recap-tiers{ display:flex; flex-direction:column; gap:.4rem; }
+.recap-caps{ display:flex; flex-direction:column; gap:.5rem; }
+.recap-cap{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.4rem .6rem;
+  background:#fff; border:1px solid var(--line); border-radius:12px; padding:.6rem .85rem; }
+.recap-cap-text{ font-weight:600; flex:1 1 8rem; }
+.recap-badges{ display:flex; flex-wrap:wrap; gap:.4rem; }
+.badge{ display:inline-flex; align-items:center; gap:.35rem; border:1.5px solid var(--line);
+  border-radius:999px; padding:.2rem .6rem; font-size:.78rem; font-weight:600; background:#fff; color:var(--ink); }
+.badge .ochip-dot, .badge .dot{ width:10px; height:10px; }
+.badge-none{ color:var(--muted); }
 .consider{ background:var(--warm); border:1px solid #EAD8CC; border-radius:14px;
   padding:1rem 1.2rem; margin:0 0 1.5rem; }
 .consider-label{ color:var(--terra); font-weight:700; text-transform:uppercase;
@@ -406,7 +419,7 @@ main{ display:block; }
   <!-- 1. Welcome -->
   <section class="screen center" id="screen-welcome" aria-labelledby="w-h">
     <div class="screen-inner welcome-inner">
-      <h1 id="w-h" class="welcome-title" tabindex="-1"><img class="welcome-title-img" src="pedtech-welcome.png" alt="Pedtech Partnership Nano Presentation: AI at the heart of the KS3 Curriculum" width="1587" height="2245" decoding="async"></h1>
+      <h1 id="w-h" class="welcome-title" tabindex="-1"><img class="welcome-title-img" src="pedtech-welcome.png" alt="Pedtech Partnership Nano Presentation: AI at the heart of the KS3 Curriculum" width="1587" height="863" decoding="async"></h1>
       <div class="welcome-logos">
         <img class="welcome-logo welcome-logo-hby" src="haileybury-logo.png" alt="Haileybury" width="2000" height="1414" decoding="async">
         <img class="welcome-logo welcome-logo-pedtech" src="pedtech-partnership-stacked.png" alt="The National PedTech Partnership" width="1414" height="2000" decoding="async">
@@ -542,14 +555,15 @@ main{ display:block; }
   <!-- 6. Close and hand off -->
   <section class="screen" id="screen-close" hidden aria-labelledby="c-h">
     <div class="screen-inner">
-      <h1 id="c-h" tabindex="-1">Where this goes</h1>
-      <p class="lede">We ranked nine areas of AI by importance. Then we wrote down what we actually want a pupil to become.</p>
+      <h1 id="c-h" tabindex="-1">AI at the heart of the KS3 Curriculum</h1>
+      <p class="lede">We ranked nine areas of AI by importance. Then we wrote down what we actually want a pupil to become. Here is the whole thing on one page.</p>
+      <div id="recap" class="recap"></div>
       <div class="consider">
         <p class="consider-label">Things to consider</p>
         <ul>
-          <li>Is this reflected in our KS3 curriculums?</li>
-          <li>How can we develop these across subjects?</li>
-          <li>Should these things be taught as a standalone topic or across departments?</li>
+          <li>Are these skills and values reflected in our KS3 curriculums?</li>
+          <li>How can we develop AI literacy/fluency across subjects?</li>
+          <li>Should 'AI topics' be taught as a standalone topic or across departments?</li>
         </ul>
       </div>
       <p><a class="cta" href="https://twade-ai.github.io/Digital-Innovations" target="_blank" rel="noopener noreferrer">Link to Haileybury's Digital Innovations Course</a></p>
@@ -1023,6 +1037,46 @@ main{ display:block; }
     if(hasBoth) both.forEach(c => list.append(h("div", {"class":"both-card", text:c.text})));
   }
 
+  /* ---------- Render: close recap ---------- */
+  const MARK_WORD = { threat: "At threat", amplify: "Can be amplified", both: "Both" };
+  function kindBadge(kind){
+    return h("span", {"class":"badge kind-" + kind},
+      h("span", {"class":"ochip-dot", "aria-hidden":true}),
+      h("span", {text: KIND_SHORT[kind] || "skill & value"}));
+  }
+  function markBadge(mark){
+    if(!mark) return h("span", {"class":"badge badge-none", text:"Not marked"});
+    return h("span", {"class":"badge"},
+      h("span", {"class":"dot " + mark, "aria-hidden":true}),
+      h("span", {text: MARK_WORD[mark]}));
+  }
+  function renderClose(){
+    const root = $("#recap"); if(!root) return;
+    root.textContent = "";
+    root.append(h("h2", {"class":"recap-h", text:"Your Diamond 9"}));
+    const tiers = h("div", {"class":"recap-tiers"});
+    TIERS.forEach(([label, idx]) => {
+      const items = h("div", {"class":"tier-items"});
+      idx.forEach(i => { const a = BY_ID[state.slots[i]]; if(a) items.append(h("span", {"class":"chip", text:a.title})); });
+      let just = ""; if(idx.includes(0)) just = state.justify.top.trim(); else if(idx.includes(8)) just = state.justify.bottom.trim();
+      if(just) items.append(h("p", {"class":"tier-just", text:"“" + just + "”"}));
+      tiers.append(h("div", {"class":"tier"}, h("div", {"class":"tier-label", text:label}), items));
+    });
+    root.append(tiers);
+    root.append(h("h2", {"class":"recap-h", text:"Your skills and values, and what AI does to them"}));
+    if(state.capacities.length === 0){
+      root.append(h("p", {"class":"hint", text:"You did not add any."}));
+    } else {
+      const caps = h("div", {"class":"recap-caps"});
+      state.capacities.forEach(c => {
+        caps.append(h("div", {"class":"recap-cap"},
+          h("span", {"class":"recap-cap-text", text:c.text}),
+          h("span", {"class":"recap-badges"}, kindBadge(c.kind), markBadge(state.marks[c.id]))));
+      });
+      root.append(caps);
+    }
+  }
+
   /* ---------- Summary (copy + print) ---------- */
   function summaryLines(){
     const tierLine = ([label, idx]) =>
@@ -1055,9 +1109,9 @@ main{ display:block; }
     s.caps.forEach(([text, mark, kind]) => { out += "- " + text + " (" + kind + "): " + mark + "\n"; });
     out += "\nTHE INSIGHT\n" + s.insight + "\n";
     out += "\nTHINGS TO CONSIDER\n";
-    out += "- Is this reflected in our KS3 curriculums?\n";
-    out += "- How can we develop these across subjects?\n";
-    out += "- Should these things be taught as a standalone topic or across departments?\n";
+    out += "- Are these skills and values reflected in our KS3 curriculums?\n";
+    out += "- How can we develop AI literacy/fluency across subjects?\n";
+    out += "- Should 'AI topics' be taught as a standalone topic or across departments?\n";
     return out;
   }
   function buildPrintSummary(){
@@ -1083,9 +1137,9 @@ main{ display:block; }
     root.append(h("p", {text:s.insight}));
     root.append(h("h3", {text:"Things to consider"}));
     const cons = h("ul");
-    ["Is this reflected in our KS3 curriculums?",
-     "How can we develop these across subjects?",
-     "Should these things be taught as a standalone topic or across departments?"]
+    ["Are these skills and values reflected in our KS3 curriculums?",
+     "How can we develop AI literacy/fluency across subjects?",
+     "Should 'AI topics' be taught as a standalone topic or across departments?"]
       .forEach(q => cons.append(h("li", {text:q})));
     root.append(cons);
   }
@@ -1125,7 +1179,8 @@ main{ display:block; }
     "rank-readback": renderReadback,
     "outline": renderOutline,
     "mark": renderMark,
-    "insight": renderInsight
+    "insight": renderInsight,
+    "close": renderClose
   };
   function updateProgress(){
     const stage = STAGE[state.screen];
