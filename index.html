@@ -238,6 +238,55 @@ main{ display:block; }
 .cap-del:hover{ background:var(--terra); color:#fff; border-color:var(--terra); }
 #outline-need{ margin-top:.9rem; }
 
+/* Tag selector + the figure that entries gather around */
+.tag-select{ display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin:0 0 .5rem; }
+.tag-select-label{ color:var(--muted); font-size:.85rem; margin-right:.2rem; }
+.tag-opt{ display:inline-flex; align-items:center; gap:.4rem; font:inherit; font-size:.85rem; font-weight:600;
+  color:var(--ink); background:#fff; border:1.5px solid var(--line); border-radius:999px; padding:.4em .8em;
+  min-height:40px; cursor:pointer; }
+.tag-opt[data-kind="value"] .ochip-dot{ background:var(--terra); }
+.tag-opt[data-kind="skill"] .ochip-dot{ background:var(--ink); }
+.tag-opt[data-kind="both"] .ochip-dot{ background:linear-gradient(90deg,var(--terra) 0 50%, var(--ink) 50% 100%); }
+.tag-opt.on{ border-color:var(--ink); background:#F4F2F8; }
+
+.outline-figure{ display:grid; grid-template-columns:1fr minmax(108px,184px) 1fr;
+  grid-template-areas:"both both both" "values figure skills"; gap:.5rem .7rem; align-items:start; margin-top:1.25rem; }
+.zone-both{ grid-area:both; }
+.zone-values{ grid-area:values; }
+.figure-img{ grid-area:figure; width:100%; height:auto; align-self:center; }
+.zone-skills{ grid-area:skills; }
+.zone-chips{ display:flex; flex-wrap:wrap; gap:.4rem; }
+.zone-both .zone-chips{ justify-content:center; }
+.zone-values .zone-chips{ justify-content:flex-end; }
+.zone-skills .zone-chips{ justify-content:flex-start; }
+.zone-label{ font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin:0 0 .4rem; }
+.zone-values .zone-label{ color:var(--terra); text-align:right; }
+.zone-skills .zone-label{ color:var(--ink); }
+.zone-both .zone-label{ color:var(--muted); text-align:center; }
+
+.ochip{ display:inline-flex; align-items:center; gap:.1rem; border:1.5px solid var(--line);
+  border-radius:999px; background:#fff; max-width:100%; }
+.ochip-cycle{ display:inline-flex; align-items:center; gap:.4rem; font:inherit; font-size:.85rem; font-weight:600;
+  color:var(--ink); background:none; border:none; cursor:pointer; padding:.32rem .15rem .32rem .6rem; min-width:0; text-align:left; }
+.ochip-dot{ width:11px; height:11px; border-radius:50%; flex:none; }
+.ochip-text{ overflow-wrap:anywhere; }
+.ochip-del{ width:24px; height:24px; border-radius:50%; border:none; background:none; color:var(--muted);
+  font-size:1.1rem; line-height:1; cursor:pointer; flex:none; margin-right:.1rem; }
+.ochip-del:hover{ color:var(--terra); }
+.kind-value{ background:var(--warm); border-color:#E2C6B4; }
+.kind-value .ochip-dot{ background:var(--terra); }
+.kind-skill{ background:#ECEAF4; border-color:#C9C4DC; }
+.kind-skill .ochip-dot{ background:var(--ink); }
+.kind-both{ background:#F4F2F8; }
+.kind-both .ochip-dot{ background:linear-gradient(90deg,var(--terra) 0 50%, var(--ink) 50% 100%); }
+
+@media (max-width:519px){
+  .outline-figure{ grid-template-columns:1fr; grid-template-areas:"figure" "both" "values" "skills"; }
+  .figure-img{ max-width:148px; margin:0 auto; }
+  .zone-chips{ justify-content:center !important; }
+  .zone-label{ text-align:center !important; }
+}
+
 /* ---------- Mark ---------- */
 .key{ display:flex; flex-wrap:wrap; gap:.6rem 1.1rem; margin:.5rem 0 1.25rem;
   padding:.75rem .9rem; background:#fff; border:1px solid var(--line); border-radius:12px; }
@@ -367,8 +416,9 @@ main{ display:block; }
   <!-- 2. Rank (Diamond 9) -->
   <section class="screen" id="screen-rank" hidden aria-labelledby="r-h">
     <div class="screen-inner">
-      <h1 id="r-h" tabindex="-1">Rank the nine</h1>
-      <p class="lede">Drag each area into the diamond — most important at the top, least at the bottom. Discuss with the person next to you as you complete this task, justify your decisions.</p>
+      <h1 id="r-h" tabindex="-1">What should we be teaching our KS3 pupils?</h1>
+      <p class="lede">In considering the vast landscape of AI for KS3 students, there are loads of ‘essential’ subjects to cover.</p>
+      <p class="lede">Please organise the topics provided below according to their level of importance for a KS3 curriculum.</p>
       <p class="hint">On a touchscreen you can also tap a card, then tap a slot. Dropping a card on a filled slot swaps the two.</p>
       <div id="diamond-area"></div>
     </div>
@@ -427,9 +477,20 @@ main{ display:block; }
         <input id="cap-input" type="text" placeholder="e.g. courage, critical thinking, teamwork" maxlength="60" enterkeyhint="done">
         <button class="btn btn-secondary" type="submit">Add</button>
       </form>
+      <div class="tag-select" role="radiogroup" aria-label="Tag the next entry as a value, both, or a skill">
+        <span class="tag-select-label">Tag it as</span>
+        <button class="tag-opt" data-kind="value" type="button" role="radio" aria-checked="false"><span class="ochip-dot" aria-hidden="true"></span>Value</button>
+        <button class="tag-opt on" data-kind="both" type="button" role="radio" aria-checked="true"><span class="ochip-dot" aria-hidden="true"></span>Both</button>
+        <button class="tag-opt" data-kind="skill" type="button" role="radio" aria-checked="false"><span class="ochip-dot" aria-hidden="true"></span>Skill</button>
+      </div>
       <p class="hint dictate-hint"><svg class="mic-ico" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="21.5"/></svg>Prefer to speak? Tap the microphone on your keyboard to dictate instead of typing.</p>
-      <p class="hint">One short phrase at a time. Most people get to eight or ten. <span id="cap-count" class="count"></span></p>
-      <ul id="cap-list" class="cap-list"></ul>
+      <p class="hint">One short phrase at a time. Most people get to eight or ten. They gather around the figure as you go. <span id="cap-count" class="count"></span></p>
+      <div class="outline-figure">
+        <div class="zone zone-both"><p class="zone-label">Both</p><div class="zone-chips" id="chips-both"></div></div>
+        <div class="zone zone-values"><p class="zone-label">Values</p><div class="zone-chips" id="chips-value"></div></div>
+        <img class="figure-img" src="person-outline.png" alt="" aria-hidden="true" width="1414" height="2000" decoding="async">
+        <div class="zone zone-skills"><p class="zone-label">Skills</p><div class="zone-chips" id="chips-skill"></div></div>
+      </div>
       <p class="hint" id="outline-need">Add at least four to continue.</p>
     </div>
     <div class="nav-foot">
@@ -559,7 +620,8 @@ main{ display:block; }
     selected: null,                       // area id selected for tap-to-place
     capacities: [],                       // [{id, text}]
     marks: {},                            // capacity id -> "threat"|"amplify"|"both"
-    justify: { top: "", bottom: "" }      // reasons for the most/least important
+    justify: { top: "", bottom: "" },     // reasons for the most/least important
+    newKind: "both"                       // skill | value | both, applied to the next entry
   };
   let capSeq = 0;
 
@@ -878,13 +940,26 @@ main{ display:block; }
   }
 
   /* ---------- Render: outline ---------- */
+  const KIND_ORDER = ["value", "both", "skill"];
+  const KIND_LABEL = { value: "a value", both: "both a skill and a value", skill: "a skill" };
+  const KIND_SHORT = { value: "value", both: "skill & value", skill: "skill" };
+  function nextKind(k){ return KIND_ORDER[(KIND_ORDER.indexOf(k) + 1) % KIND_ORDER.length]; }
+  function chipEl(cap){
+    const cyc = h("button", {"class":"ochip-cycle", type:"button",
+      "aria-label": cap.text + ", tagged as " + KIND_LABEL[cap.kind] + ". Activate to change the tag."},
+      h("span", {"class":"ochip-dot", "aria-hidden":true}),
+      h("span", {"class":"ochip-text", text:cap.text}));
+    cyc.addEventListener("click", () => { cap.kind = nextKind(cap.kind); renderOutline(); });
+    const del = h("button", {"class":"ochip-del", type:"button", "aria-label":"Remove " + cap.text}, "×");
+    del.addEventListener("click", () => removeCap(cap.id));
+    return h("div", {"class": "ochip kind-" + cap.kind}, cyc, del);
+  }
   function renderOutline(){
-    const list = $("#cap-list");
-    list.textContent = "";
+    const buckets = { value: $("#chips-value"), both: $("#chips-both"), skill: $("#chips-skill") };
+    Object.keys(buckets).forEach(k => { if(buckets[k]) buckets[k].textContent = ""; });
     state.capacities.forEach(cap => {
-      const del = h("button", {"class":"cap-del", type:"button", "aria-label":"Remove " + cap.text}, "×");
-      del.addEventListener("click", () => removeCap(cap.id));
-      list.append(h("li", {"class":"cap-item"}, h("span", {"class":"cap-text", text:cap.text}), del));
+      const b = buckets[cap.kind] || buckets.both;
+      if(b) b.append(chipEl(cap));
     });
     const n = state.capacities.length;
     $("#cap-count").textContent = n ? (n + (n === 1 ? " item so far" : " items so far")) : "";
@@ -898,7 +973,7 @@ main{ display:block; }
     if(!v) return false;
     if(state.capacities.some(c => c.text.toLowerCase() === v.toLowerCase())) return "dup";
     if(state.capacities.length >= 16){ live("That is plenty to work with."); return false; }
-    state.capacities.push({ id: ++capSeq, text: v });
+    state.capacities.push({ id: ++capSeq, text: v, kind: state.newKind || "both" });
     renderOutline();
     return true;
   }
@@ -957,7 +1032,7 @@ main{ display:block; }
         top: state.justify.top.trim(),
         bottom: state.justify.bottom.trim()
       },
-      caps: state.capacities.map(c => [c.text, MARK_TEXT[state.marks[c.id]] || "not marked"]),
+      caps: state.capacities.map(c => [c.text, MARK_TEXT[state.marks[c.id]] || "not marked", KIND_SHORT[c.kind] || "skill & value"]),
       insight: both.length
         ? 'The ones marked "both" are the whole point. What makes AI threaten or amplify them is not the tool — it is the task you set.'
         : "Even the ones split into threat or amplify can flip, depending on how the task is set."
@@ -973,7 +1048,7 @@ main{ display:block; }
     out += "Most important — " + s.reasoning.topTitle + ": " + (s.reasoning.top || "(not given)") + "\n";
     out += "Least important — " + s.reasoning.bottomTitle + ": " + (s.reasoning.bottom || "(not given)") + "\n";
     out += "\nWHAT I WANT A PUPIL TO BECOME — AND WHAT AI DOES TO IT\n";
-    s.caps.forEach(([text, mark]) => { out += "- " + text + ": " + mark + "\n"; });
+    s.caps.forEach(([text, mark, kind]) => { out += "- " + text + " (" + kind + "): " + mark + "\n"; });
     out += "\nTHE INSIGHT\n" + s.insight + "\n";
     out += "\nTHINGS TO CONSIDER\n";
     out += "- Is this reflected in our KS3 curriculums?\n";
@@ -997,8 +1072,8 @@ main{ display:block; }
     root.append(h("p", {"class":"p-tier"}, h("span", {"class":"p-label", text:"Least important — " + s.reasoning.bottomTitle + ": "}), s.reasoning.bottom || "(not given)"));
 
     root.append(h("h3", {text:"What I want a pupil to become — and what AI does to it"}));
-    s.caps.forEach(([text, mark]) =>
-      root.append(h("p", {"class":"p-tier"}, h("span", {"class":"p-label", text:text + ": "}), mark)));
+    s.caps.forEach(([text, mark, kind]) =>
+      root.append(h("p", {"class":"p-tier"}, h("span", {"class":"p-label", text:text + " (" + kind + "): "}), mark)));
 
     root.append(h("h3", {text:"The insight"}));
     root.append(h("p", {text:s.insight}));
@@ -1060,7 +1135,19 @@ main{ display:block; }
   }
   /* ---------- Read aloud (speech synthesis; offline, nothing sent) ---------- */
   const TTS = ("speechSynthesis" in window) ? window.speechSynthesis : null;
-  let readBtn = null, speaking = false;
+  let readBtn = null, speaking = false, chosenVoice = null;
+  function pickVoice(){
+    const voices = (TTS && TTS.getVoices && TTS.getVoices()) || [];
+    if(!voices.length) return null;
+    // Prefer known natural-sounding voices, then any "enhanced/natural" English voice, then any en-GB.
+    const named = ["google uk english female","google uk english male","serena","stephanie",
+                   "kate","martha","jamie","daniel","arthur","oliver","google us english","samantha"];
+    for(const n of named){ const v = voices.find(x => x.name.toLowerCase().includes(n)); if(v) return v; }
+    const fancy = voices.find(v => /^en/i.test(v.lang) && /(enhanced|natural|premium|neural)/i.test(v.name));
+    if(fancy) return fancy;
+    return voices.find(v => /en[-_]?gb/i.test(v.lang)) || voices.find(v => /^en/i.test(v.lang)) || voices[0] || null;
+  }
+  function loadVoices(){ chosenVoice = pickVoice(); }
   function readableText(){
     if(state.screen === "welcome")
       return "Pedtech Partnership Nano Presentation. AI at the heart of the KS3 Curriculum. " +
@@ -1090,7 +1177,8 @@ main{ display:block; }
     if(!text) return;
     TTS.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "en-GB"; u.rate = 1; u.pitch = 1;
+    u.lang = "en-GB"; u.rate = 0.95; u.pitch = 1;
+    if(chosenVoice) u.voice = chosenVoice;
     u.onend = () => { speaking = false; setReadLabel(false); };
     u.onerror = () => { speaking = false; setReadLabel(false); };
     speaking = true; setReadLabel(true);
@@ -1138,6 +1226,8 @@ main{ display:block; }
       readBtn.setAttribute("aria-label", "Read this page aloud");
       readBtn.innerHTML = '<svg class="rl-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/></svg><span class="rl-text">Read aloud</span>';
       readBtn.addEventListener("click", toggleSpeak);
+      loadVoices();
+      if("onvoiceschanged" in TTS) TTS.onvoiceschanged = loadVoices;
     }
 
     $("#begin").addEventListener("click", () => go("rank"));
@@ -1165,6 +1255,18 @@ main{ display:block; }
       }
       if(res) { input.value = ""; }
       input.focus();
+    });
+
+    // Skill / value / both tag selector for new entries
+    document.querySelectorAll(".tag-opt").forEach(b => {
+      b.addEventListener("click", () => {
+        state.newKind = b.dataset.kind;
+        document.querySelectorAll(".tag-opt").forEach(x => {
+          const on = x === b;
+          x.classList.toggle("on", on);
+          x.setAttribute("aria-checked", on ? "true" : "false");
+        });
+      });
     });
 
     // Close tools
