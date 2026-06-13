@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="description" content="A calm, guided thinking tool for building a KS3 AI curriculum. Nothing is collected or sent.">
+<title>What really matters — a thinking tool for AI literacy</title>
+<style>
+/* ---------- Palette and type ---------- */
+:root{
+  --ink:#262338;
+  --terra:#D9733F;
+  --teal:#2F8F83;
+  --muted:#6E6A82;
+  --line:#D9D6E2;
+  --warm:#FAEDE4;
+  --tealtint:#E4F0EE;
+  --bg:#FBFAFD;
+  --card:#FFFFFF;
+  --threat:#D64541;
+  --amplify:#3FA34D;
+
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --maxw: 760px;
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(38,35,56,.06), 0 10px 26px rgba(38,35,56,.07);
+  --shadow-soft: 0 1px 2px rgba(38,35,56,.05), 0 4px 12px rgba(38,35,56,.05);
+
+  /* Diamond sizing — shrinks gracefully on small screens */
+  --cardw: clamp(94px, 27vw, 152px);
+  --cardh: clamp(98px, 27vw, 130px);
+  --gap: clamp(.35rem, 1.6vw, .6rem);
+}
+
+*{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:clamp(16px, 1rem + .2vw, 18px);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+h1{ font-family:var(--serif); font-weight:700; line-height:1.15; letter-spacing:.01em;
+    font-size:clamp(1.55rem, 1.2rem + 2.2vw, 2.3rem); margin:0 0 .6rem; }
+h1:focus{ outline:none; }
+p{ margin:0 0 1rem; }
+strong{ font-weight:700; }
+a{ color:var(--teal); }
+
+.visually-hidden{
+  position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+.skip{
+  position:absolute; left:8px; top:-48px; background:var(--ink); color:#fff;
+  padding:.6em 1em; border-radius:8px; z-index:1200; transition:top .15s;
+}
+.skip:focus{ top:8px; }
+
+/* ---------- Top bar / progress ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+  padding:.55rem clamp(1rem,4vw,2rem);
+  background:rgba(251,250,253,.92);
+  backdrop-filter:saturate(1.1) blur(6px);
+  border-bottom:1px solid var(--line);
+}
+.brand{ font-size:.82rem; color:var(--muted); letter-spacing:.02em; }
+.steps{ list-style:none; display:flex; gap:clamp(.5rem,2vw,1.1rem); margin:0; padding:0; }
+.steps li{ display:flex; align-items:center; gap:.4rem; color:var(--muted); font-size:.82rem; }
+.steps .dot{
+  width:12px; height:12px; border-radius:50%;
+  border:2px solid var(--line); background:transparent; flex:none;
+}
+.steps li.done .dot{ background:var(--teal); border-color:var(--teal); }
+.steps li.current .dot{ border-color:var(--terra); background:var(--terra);
+  box-shadow:0 0 0 4px rgba(217,115,63,.15); }
+.steps li.current{ color:var(--ink); font-weight:600; }
+@media (max-width:560px){ .steps .lbl{ display:none; } .brand{ display:none; } }
+
+/* ---------- Screen scaffolding ---------- */
+main{ display:block; }
+.screen{
+  display:flex; flex-direction:column;
+  min-height: calc(100dvh - 54px);
+  padding: clamp(1.25rem,5vw,2.75rem) clamp(1rem,4vw,2rem);
+}
+.screen[hidden]{ display:none; }
+.screen-inner{ width:100%; max-width:var(--maxw); margin:0 auto; flex:1 0 auto; }
+.screen.center{ justify-content:center; }
+.screen.center .screen-inner{ flex:0 0 auto; }
+
+.eyebrow{ color:var(--terra); font-weight:700; letter-spacing:.06em;
+  text-transform:uppercase; font-size:.78rem; margin:0 0 .5rem; }
+.lede{ color:var(--ink); font-size:1.08rem; max-width:54ch; }
+.lede.big{ font-size:clamp(1.15rem,1rem + 1vw,1.5rem); line-height:1.4; max-width:32ch; }
+.hint{ color:var(--muted); font-size:.92rem; max-width:54ch; }
+.footnote{ color:var(--muted); font-size:.85rem; margin-top:1.25rem; }
+
+/* ---------- Buttons ---------- */
+.btn{
+  font:inherit; font-weight:600; font-size:1.02rem;
+  padding:.78em 1.5em; border-radius:999px; border:1.5px solid transparent;
+  min-height:50px; cursor:pointer; -webkit-tap-highlight-color:transparent;
+}
+.btn-primary{ background:var(--terra); color:#fff; }
+.btn-primary:hover{ background:#c6612d; }
+.btn-primary:disabled{ background:#ECE8F1; color:#AFA9BC; cursor:not-allowed; }
+.btn-secondary{ background:#fff; color:var(--ink); border-color:var(--line); }
+.btn-secondary:hover{ border-color:var(--muted); }
+.btn-quiet{ background:transparent; color:var(--muted); padding-left:.4em; padding-right:.4em; }
+.btn-quiet:hover{ color:var(--ink); }
+:focus-visible{ outline:3px solid var(--teal); outline-offset:2px; }
+
+.welcome-actions{ margin-top:1.75rem; }
+.nav-foot{
+  width:100%; max-width:var(--maxw); margin:1.75rem auto 0;
+  display:flex; align-items:center; justify-content:space-between; gap:1rem;
+}
+
+/* ---------- Cards ---------- */
+.card{
+  position:relative; background:var(--card);
+  border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow-soft);
+  padding:1.35rem .7rem .7rem; width:var(--cardw);
+  display:flex; flex-direction:column; gap:.15rem;
+  touch-action:none; user-select:none; -webkit-user-select:none; cursor:grab;
+}
+.card:active{ cursor:grabbing; }
+@media (hover:hover){ .pool .card:hover{ transform:translateY(-2px); box-shadow:var(--shadow); } }
+.card-letter{ position:absolute; top:.45rem; left:.6rem; color:var(--terra);
+  font-weight:700; font-size:.8rem; letter-spacing:.03em; }
+.card-dot{ position:absolute; top:.6rem; right:.6rem; width:9px; height:9px;
+  border-radius:50%; background:var(--teal); }
+.card-title{ font-weight:700; color:var(--ink); font-size:.92rem; line-height:1.18;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.card-gloss{ color:var(--muted); font-style:italic; font-size:.78rem; line-height:1.22;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card.selected{ outline:3px solid var(--terra); outline-offset:2px; box-shadow:var(--shadow); }
+.card.dragging{ opacity:.32; }
+.card.ghost{
+  position:fixed; z-index:1000; margin:0; pointer-events:none;
+  box-shadow:0 16px 36px rgba(38,35,56,.24); transform:scale(1.04);
+}
+
+/* ---------- Pool + diamond ---------- */
+#diamond-area{ margin-top:1.25rem; }
+.pool{
+  display:flex; flex-wrap:wrap; gap:var(--gap); justify-content:center;
+  padding:.85rem; background:#fff; border:1px solid var(--line);
+  border-radius:var(--radius); min-height:70px; position:relative;
+}
+.pool.drop-target{ border-color:var(--teal); background:var(--tealtint); }
+.pool-empty{ color:var(--muted); font-size:.9rem; align-self:center; margin:0; padding:.5rem; }
+
+.diamond{ display:flex; flex-direction:column; align-items:center; gap:var(--gap); margin-top:1.5rem; }
+.d-row{ display:flex; gap:var(--gap); justify-content:center; }
+.d-label{ font-size:.8rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.d-label.d-top{ color:var(--terra); margin-bottom:.2rem; }
+.d-label.d-bottom{ color:var(--muted); margin-top:.2rem; }
+.slot{
+  width:var(--cardw); height:var(--cardh);
+  border:2px dashed var(--line); border-radius:14px; background:#F6F5FA;
+  display:flex; align-items:stretch; justify-content:stretch; touch-action:none;
+}
+.slot.drop-target{ border-color:var(--teal); background:var(--tealtint); }
+.slot .card{
+  width:100%; height:100%; box-shadow:none; border-color:var(--line);
+  background:#fff; justify-content:flex-start;
+}
+.slot .card.selected{ outline:3px solid var(--terra); }
+
+/* ---------- Readback tiers ---------- */
+.readback{ margin-top:1.25rem; display:flex; flex-direction:column; gap:.5rem; }
+.tier{ display:flex; gap:.75rem; align-items:baseline; padding:.7rem .9rem;
+  background:#fff; border:1px solid var(--line); border-radius:12px; }
+.tier-label{ flex:0 0 8.5rem; color:var(--terra); font-weight:700; font-size:.85rem;
+  text-transform:uppercase; letter-spacing:.04em; }
+.tier-items{ display:flex; flex-wrap:wrap; gap:.4rem; }
+.chip{ background:var(--tealtint); color:var(--ink); border-radius:999px;
+  padding:.25em .8em; font-size:.9rem; }
+.hold{ margin-top:1.5rem; color:var(--muted); font-style:italic; }
+@media (max-width:520px){ .tier{ flex-direction:column; gap:.35rem; } .tier-label{ flex:none; } }
+
+/* ---------- Outline ---------- */
+.cap-form{ display:flex; gap:.6rem; margin:1.25rem 0 .5rem; }
+.cap-form input{
+  flex:1; min-width:0; font:inherit; padding:.7em .9em; min-height:50px;
+  border:1.5px solid var(--line); border-radius:12px; background:#fff; color:var(--ink);
+}
+.cap-form input.flash{ border-color:var(--terra); background:var(--warm); }
+.cap-form input:focus{ outline:3px solid var(--teal); outline-offset:1px; border-color:var(--teal); }
+.count{ color:var(--terra); font-weight:600; }
+.cap-list{ list-style:none; margin:.75rem 0 0; padding:0; display:flex; flex-direction:column; gap:.5rem; }
+.cap-item{ display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+  background:var(--warm); border:1px solid #EAD8CC; border-radius:12px; padding:.6rem .9rem; }
+.cap-text{ font-weight:600; }
+.cap-del{ flex:none; width:34px; height:34px; border-radius:50%; border:1px solid #E2C6B4;
+  background:#fff; color:var(--terra); font-size:1.25rem; line-height:1; cursor:pointer; }
+.cap-del:hover{ background:var(--terra); color:#fff; border-color:var(--terra); }
+#outline-need{ margin-top:.9rem; }
+
+/* ---------- Mark ---------- */
+.key{ display:flex; flex-wrap:wrap; gap:.6rem 1.1rem; margin:.5rem 0 1.25rem;
+  padding:.75rem .9rem; background:#fff; border:1px solid var(--line); border-radius:12px; }
+.key-item{ display:inline-flex; align-items:center; gap:.5rem; color:var(--muted); font-size:.9rem; }
+.dot{ width:14px; height:14px; border-radius:50%; flex:none; display:inline-block; }
+.dot.threat{ background:var(--threat); }
+.dot.amplify{ background:var(--amplify); }
+.dot.both{ background:linear-gradient(90deg, var(--threat) 0 50%, var(--amplify) 50% 100%); }
+
+.mark-list{ display:flex; flex-direction:column; gap:.7rem; }
+.mark-row{ display:flex; flex-wrap:wrap; gap:.7rem; align-items:center;
+  background:#fff; border:1px solid var(--line); border-radius:14px; padding:.85rem 1rem; }
+.mark-cap{ font-weight:600; flex:1 1 12rem; }
+.mark-opts{ display:flex; gap:.5rem; flex-wrap:wrap; }
+.opt{ display:inline-flex; align-items:center; gap:.5rem; font:inherit;
+  padding:.6em .85em; min-height:46px; border:1.5px solid var(--line); border-radius:999px;
+  background:#fff; color:var(--ink); cursor:pointer; }
+.opt:hover{ border-color:var(--muted); }
+.opt.on{ font-weight:700; }
+.opt.on[data-opt="threat"]{ border-color:var(--threat); background:#FBE9E8; }
+.opt.on[data-opt="amplify"]{ border-color:var(--amplify); background:#E9F4EB; }
+.opt.on[data-opt="both"]{ border-color:var(--ink); background:#F2EEF6; }
+
+/* ---------- Insight ---------- */
+.both-list{ display:flex; flex-direction:column; gap:.6rem; margin-top:1.5rem; }
+.both-card{ background:var(--warm); border:1px solid #EAD8CC; border-radius:14px;
+  padding:.9rem 1.1rem; font-weight:700; font-size:1.05rem; }
+
+/* ---------- Close ---------- */
+.cta{ display:inline-block; background:var(--terra); color:#fff; font-weight:700;
+  text-decoration:none; padding:.85em 1.5em; border-radius:999px; margin:.25rem 0 1.5rem; }
+.cta:hover{ background:#c6612d; }
+.close-tools{ display:flex; flex-wrap:wrap; gap:.7rem; }
+
+/* ---------- Toast ---------- */
+.toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
+  background:var(--ink); color:#fff; padding:.7em 1.15em; border-radius:999px;
+  box-shadow:var(--shadow); z-index:1100; font-size:.95rem; }
+.toast[hidden]{ display:none; }
+
+/* ---------- Motion ---------- */
+@media (prefers-reduced-motion: no-preference){
+  .card{ transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease; }
+  .skip{ transition:top .15s ease; }
+}
+
+/* ---------- Print ---------- */
+#print-summary{ display:none; }
+@media print{
+  body *{ visibility:hidden; }
+  #print-summary, #print-summary *{ visibility:visible; }
+  #print-summary{ display:block; position:absolute; inset:0; padding:24px; color:#000; }
+  #print-summary h2{ font-family:var(--serif); margin:0 0 .25rem; }
+  #print-summary h3{ margin:1.1rem 0 .35rem; font-size:1rem; }
+  #print-summary .p-tier{ margin:.1rem 0; }
+  #print-summary .p-label{ font-weight:700; }
+  .topbar, .nav-foot, .toast{ display:none !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar" id="topbar" hidden>
+  <span class="brand">AI literacy · a thinking tool</span>
+  <ol class="steps" id="steps" aria-label="Progress through the four stages">
+    <li data-stage="0"><span class="dot" aria-hidden="true"></span><span class="lbl">Rank</span></li>
+    <li data-stage="1"><span class="dot" aria-hidden="true"></span><span class="lbl">Outline</span></li>
+    <li data-stage="2"><span class="dot" aria-hidden="true"></span><span class="lbl">Mark</span></li>
+    <li data-stage="3"><span class="dot" aria-hidden="true"></span><span class="lbl">Insight</span></li>
+  </ol>
+</header>
+
+<main id="main" tabindex="-1">
+
+  <!-- 1. Welcome -->
+  <section class="screen center" id="screen-welcome" aria-labelledby="w-h">
+    <div class="screen-inner">
+      <p class="eyebrow">Before we talk about AI</p>
+      <h1 id="w-h" tabindex="-1">What really matters</h1>
+      <p class="lede">Nine areas of AI, and a question about what really matters. This will take about ten minutes, and works best if you argue with yourself as you go.</p>
+      <div class="welcome-actions"><button class="btn btn-primary" id="begin">Begin</button></div>
+    </div>
+  </section>
+
+  <!-- 2. Rank (Diamond 9) -->
+  <section class="screen" id="screen-rank" hidden aria-labelledby="r-h">
+    <div class="screen-inner">
+      <h1 id="r-h" tabindex="-1">Rank the nine</h1>
+      <p class="lede">Drag each area into the diamond — most important at the top, least at the bottom. Just place them; there is no debate yet.</p>
+      <p class="hint">On a touchscreen you can also tap a card, then tap a slot. Dropping a card on a filled slot swaps the two.</p>
+      <div id="diamond-area"></div>
+      <p class="footnote">There is no right answer. The disagreement is the point.</p>
+    </div>
+    <div class="nav-foot">
+      <button class="btn btn-quiet" data-back>Back</button>
+      <button class="btn btn-primary" id="rank-next" disabled>Continue</button>
+    </div>
+  </section>
+
+  <!-- 2b. Ranking readback -->
+  <section class="screen" id="screen-rank-readback" hidden aria-labelledby="rb-h">
+    <div class="screen-inner">
+      <h1 id="rb-h" tabindex="-1">Your ranking</h1>
+      <p class="lede">Here is the order you chose, grouped into tiers.</p>
+      <div id="readback-list" class="readback"></div>
+      <p class="hold">Hold that thought. We will come back to it.</p>
+    </div>
+    <div class="nav-foot">
+      <button class="btn btn-quiet" data-back>Back</button>
+      <button class="btn btn-primary" id="readback-next">Continue</button>
+    </div>
+  </section>
+
+  <!-- 3. Human outline -->
+  <section class="screen" id="screen-outline" hidden aria-labelledby="o-h">
+    <div class="screen-inner">
+      <h1 id="o-h" tabindex="-1">The human outline</h1>
+      <p class="lede">Forget AI for a moment. Write the characters, skills and virtues you want a pupil to leave KS3 with.</p>
+      <form id="cap-form" class="cap-form" autocomplete="off">
+        <label class="visually-hidden" for="cap-input">Add a character, skill or virtue</label>
+        <input id="cap-input" type="text" placeholder="e.g. courage, critical thinking, teamwork" maxlength="60" enterkeyhint="done">
+        <button class="btn btn-secondary" type="submit">Add</button>
+      </form>
+      <p class="hint">One short phrase at a time. Most people get to eight or ten. <span id="cap-count" class="count"></span></p>
+      <ul id="cap-list" class="cap-list"></ul>
+      <p class="hint" id="outline-need">Add at least four to continue.</p>
+    </div>
+    <div class="nav-foot">
+      <button class="btn btn-quiet" data-back>Back</button>
+      <button class="btn btn-primary" id="outline-next" disabled>Continue</button>
+    </div>
+  </section>
+
+  <!-- 4. Mark each against AI -->
+  <section class="screen" id="screen-mark" hidden aria-labelledby="m-h">
+    <div class="screen-inner">
+      <h1 id="m-h" tabindex="-1">Mark each one against AI</h1>
+      <p class="lede">For each one, ask what AI does to it. Does it threaten it, amplify it, or both?</p>
+      <div class="key" aria-hidden="true">
+        <span class="key-item"><span class="dot threat"></span>Most at threat from AI</span>
+        <span class="key-item"><span class="dot amplify"></span>AI can amplify it</span>
+        <span class="key-item"><span class="dot both"></span>Both — the task decides</span>
+      </div>
+      <div id="mark-list" class="mark-list"></div>
+    </div>
+    <div class="nav-foot">
+      <button class="btn btn-quiet" data-back>Back</button>
+      <button class="btn btn-primary" id="mark-next" disabled>Continue</button>
+    </div>
+  </section>
+
+  <!-- 5. The insight -->
+  <section class="screen center" id="screen-insight" hidden aria-labelledby="i-h">
+    <div class="screen-inner">
+      <h1 id="i-h" tabindex="-1">The insight</h1>
+      <div id="insight-both" hidden>
+        <p class="lede big">The ones you marked <strong>both</strong> are the whole point. Whether AI threatens or amplifies these comes down to one thing: how the task is set.</p>
+        <div id="both-list" class="both-list"></div>
+      </div>
+      <div id="insight-none" hidden>
+        <p class="lede big">Even the ones you split into threat or amplify can flip, depending on how the task is set.</p>
+      </div>
+    </div>
+    <div class="nav-foot">
+      <button class="btn btn-quiet" data-back>Back</button>
+      <button class="btn btn-primary" id="insight-next">Continue</button>
+    </div>
+  </section>
+
+  <!-- 6. Close and hand off -->
+  <section class="screen" id="screen-close" hidden aria-labelledby="c-h">
+    <div class="screen-inner">
+      <h1 id="c-h" tabindex="-1">Where this goes</h1>
+      <p class="lede">You ranked nine areas of AI by importance. Then you wrote down what you actually want a pupil to become. A good curriculum is built around the second list, and uses the first only to serve it.</p>
+      <p><a class="cta" href="https://twade-ai.github.io/Digital-Innovations" target="_blank" rel="noopener noreferrer">See a curriculum built this way</a></p>
+      <div class="close-tools">
+        <button class="btn btn-secondary" id="copy-btn" type="button">Copy my work</button>
+        <button class="btn btn-secondary" id="print-btn" type="button">Print</button>
+      </div>
+      <p class="footnote">Nothing you have written leaves this page. Copy or print it if you want to keep it.</p>
+    </div>
+    <div class="nav-foot">
+      <button class="btn btn-quiet" data-back>Back</button>
+      <span aria-hidden="true"></span>
+    </div>
+  </section>
+
+</main>
+
+<div class="visually-hidden" id="live" aria-live="polite"></div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<div id="print-summary" aria-hidden="true"></div>
+<noscript><p style="padding:2rem">This tool needs JavaScript to run. It does not collect or send any data.</p></noscript>
+
+<script>
+"use strict";
+(function(){
+
+  /* ---------- Data: the nine areas ---------- */
+  const AREAS = [
+    { id:"A", title:"Deepfakes and Disinformation", gloss:"Can you trust what you see and hear?" },
+    { id:"B", title:"Using AI Well",                 gloss:"The practical skill of prompting." },
+    { id:"C", title:"Understanding What AI Is",      gloss:"Does it think, or just predict?" },
+    { id:"D", title:"Bias in Data",                  gloss:"Who gets harmed when data is skewed?" },
+    { id:"E", title:"Knowing What to Trust",         gloss:"Checking claims for yourself." },
+    { id:"F", title:"The Environmental Cost",        gloss:"The energy price of every query." },
+    { id:"G", title:"Your Data, Their Model",        gloss:"Your data as raw material." },
+    { id:"H", title:"Keeping Humans in Charge",      gloss:"When must a person decide?" },
+    { id:"I", title:"AI Companions",                 gloss:"Bonding with a chatbot." }
+  ];
+  const BY_ID = Object.fromEntries(AREAS.map(a => [a.id, a]));
+  const title = id => (BY_ID[id] ? BY_ID[id].title : "");
+
+  // Diamond layout: rows of 1, 2, 3, 2, 1 -> slot indices 0..8
+  const ROWS = [[0],[1,2],[3,4,5],[6,7],[8]];
+  const SLOT_TIER = ["most important","more important","more important","middle",
+                     "middle","middle","less important","less important","least important"];
+  const TIERS = [
+    ["Most important",  [0]],
+    ["More important",  [1,2]],
+    ["Middle",          [3,4,5]],
+    ["Less important",  [6,7]],
+    ["Least important", [8]]
+  ];
+  const MARK_TEXT = { threat:"at threat", amplify:"can be amplified", both:"both — the task decides" };
+
+  const ORDER = ["welcome","rank","rank-readback","outline","mark","insight","close"];
+  const STAGE = { "welcome":-1, "rank":0, "rank-readback":0, "outline":1, "mark":2, "insight":3, "close":4 };
+
+  /* ---------- State (memory only; no storage API used) ---------- */
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+  const state = {
+    screen:"welcome",
+    order: shuffle(AREAS.map(a => a.id)), // pool order, shuffled each load
+    slots: new Array(9).fill(null),       // slot index -> area id or null
+    selected: null,                       // area id selected for tap-to-place
+    capacities: [],                       // [{id, text}]
+    marks: {}                             // capacity id -> "threat"|"amplify"|"both"
+  };
+  let capSeq = 0;
+
+  /* ---------- Tiny DOM helper (textContent only — user input never goes to innerHTML) ---------- */
+  function h(tag, props, ...kids){
+    const e = document.createElement(tag);
+    if(props) for(const k in props){
+      const v = props[k];
+      if(v === false || v == null) continue;
+      if(k === "class") e.className = v;
+      else if(k === "text") e.textContent = v;
+      else if(v === true) e.setAttribute(k, "");
+      else e.setAttribute(k, v);
+    }
+    for(const kid of kids){
+      if(kid == null) continue;
+      e.append(kid.nodeType ? kid : document.createTextNode(kid));
+    }
+    return e;
+  }
+  const $ = sel => document.querySelector(sel);
+  function live(msg){ $("#live").textContent = ""; $("#live").textContent = msg; }
+
+  const slotIndexOf = id => state.slots.indexOf(id);
+  const isPlaced = id => state.slots.includes(id);
+  const allPlaced = () => state.slots.every(s => s !== null);
+
+  /* ---------- Render: diamond + pool ---------- */
+  function cardEl(area, whereLabel){
+    const selected = state.selected === area.id;
+    const c = h("div", {
+      "class": "card" + (selected ? " selected" : ""),
+      "data-area": area.id, "role":"button", "tabindex":"0",
+      "aria-pressed": selected ? "true" : "false",
+      "aria-label": area.title + ". " + whereLabel + ". Activate to pick up or put down."
+    },
+      h("span", {"class":"card-letter","aria-hidden":true, text:area.id}),
+      h("span", {"class":"card-dot","aria-hidden":true}),
+      h("span", {"class":"card-title", text:area.title}),
+      h("span", {"class":"card-gloss", text:area.gloss})
+    );
+    return c;
+  }
+
+  function renderDiamond(){
+    const root = $("#diamond-area");
+    root.textContent = "";
+
+    const pool = h("div", {"class":"pool", id:"pool", "role":"group",
+      "tabindex":"0", "aria-label":"Tray of cards still to place. With a card selected, activate to return it here."});
+    const unplaced = state.order.filter(id => !isPlaced(id));
+    if(unplaced.length === 0){
+      pool.append(h("p", {"class":"pool-empty", text:"All nine placed."}));
+    } else {
+      unplaced.forEach(id => pool.append(cardEl(BY_ID[id], "In the tray")));
+    }
+
+    const dia = h("div", {"class":"diamond"});
+    dia.append(h("div", {"class":"d-label d-top", text:"Most important"}));
+    ROWS.forEach(row => {
+      const r = h("div", {"class":"d-row"});
+      row.forEach(i => {
+        const occ = state.slots[i];
+        const slot = h("div", {
+          "class":"slot", "data-slot": String(i), "role":"button",
+          "tabindex": occ ? "-1" : "0",
+          "aria-label": occ
+            ? (SLOT_TIER[i] + " slot, holding " + title(occ) + ".")
+            : (SLOT_TIER[i] + " slot, empty. Activate to place the selected card.")
+        });
+        if(occ) slot.append(cardEl(BY_ID[occ], "In the " + SLOT_TIER[i] + " slot"));
+        r.append(slot);
+      });
+      dia.append(r);
+    });
+    dia.append(h("div", {"class":"d-label d-bottom", text:"Least important"}));
+
+    root.append(pool, dia);
+    updateRankNext();
+  }
+
+  function focusArea(id){ const el = document.querySelector('.card[data-area="'+id+'"]'); if(el) el.focus(); }
+  function focusSlot(i){
+    const el = document.querySelector('.slot[data-slot="'+i+'"] .card') ||
+               document.querySelector('.slot[data-slot="'+i+'"]');
+    if(el) el.focus();
+  }
+
+  /* ---------- Placement model ---------- */
+  function moveToSlot(areaId, to){
+    const from = slotIndexOf(areaId);
+    if(from === to) return;
+    const displaced = state.slots[to];
+    state.slots[to] = areaId;
+    if(from >= 0){
+      // swap: the displaced card takes the vacated slot (or it empties)
+      state.slots[from] = (displaced && displaced !== areaId) ? displaced : null;
+    }
+    // if it came from the pool, any displaced card simply returns to the pool
+  }
+  function returnToPool(areaId){
+    const from = slotIndexOf(areaId);
+    if(from >= 0) state.slots[from] = null;
+  }
+  function swapPlacement(a, b){
+    const ia = slotIndexOf(a), ib = slotIndexOf(b);
+    if(ia >= 0 && ib >= 0){ state.slots[ia] = b; state.slots[ib] = a; }
+    else if(ia >= 0){ state.slots[ia] = b; } // b comes from pool, a returns to pool
+    else if(ib >= 0){ state.slots[ib] = a; } // a comes from pool, b returns to pool
+    // both in pool: nothing to do
+  }
+
+  function afterPlacementChange(){ renderDiamond(); updateRankNext(); }
+  function updateRankNext(){ $("#rank-next").disabled = !allPlaced(); }
+
+  /* ---------- Tap-to-place / keyboard ---------- */
+  function tapCard(areaId){
+    if(state.selected == null){
+      state.selected = areaId;
+      live("Picked up " + title(areaId) + ". Now choose a slot, or tap the tray.");
+    } else if(state.selected === areaId){
+      state.selected = null;
+      live("Put down " + title(areaId) + ".");
+    } else {
+      const other = state.selected;
+      swapPlacement(other, areaId);
+      state.selected = null;
+      live("Swapped " + title(other) + " and " + title(areaId) + ".");
+    }
+    afterPlacementChange();
+    focusArea(areaId);
+  }
+  function tapEmptySlot(i){
+    if(state.selected == null){ live("Pick up a card first, then tap a slot."); return; }
+    const moved = state.selected;
+    moveToSlot(moved, i);
+    state.selected = null;
+    afterPlacementChange();
+    live("Placed " + title(moved) + " in " + SLOT_TIER[i] + ".");
+    focusSlot(i);
+  }
+  function tapPool(){
+    if(state.selected == null) return;
+    const moved = state.selected;
+    if(slotIndexOf(moved) >= 0){
+      returnToPool(moved);
+      live("Returned " + title(moved) + " to the tray.");
+    }
+    state.selected = null;
+    afterPlacementChange();
+    focusArea(moved);
+  }
+
+  /* ---------- Pointer drag (touch + mouse) ---------- */
+  let drag = null;
+  function resolveTarget(x, y){
+    const el = document.elementFromPoint(x, y);
+    if(!el) return null;
+    const slot = el.closest(".slot");
+    if(slot) return { type:"slot", index: Number(slot.dataset.slot) };
+    if(el.closest(".pool")) return { type:"pool" };
+    return null;
+  }
+  function clearHighlight(){
+    document.querySelectorAll(".drop-target").forEach(n => n.classList.remove("drop-target"));
+  }
+  function highlightUnder(x, y){
+    clearHighlight();
+    const t = resolveTarget(x, y);
+    if(t && t.type === "slot"){
+      const s = document.querySelector('.slot[data-slot="'+t.index+'"]');
+      if(s) s.classList.add("drop-target");
+    } else if(t && t.type === "pool"){
+      const p = document.getElementById("pool"); if(p) p.classList.add("drop-target");
+    }
+  }
+  function startGhost(){
+    const r = drag.card.getBoundingClientRect();
+    const g = drag.card.cloneNode(true);
+    g.classList.add("ghost"); g.classList.remove("selected");
+    g.style.width = r.width + "px"; g.style.height = r.height + "px";
+    g.style.left = r.left + "px"; g.style.top = r.top + "px";
+    document.body.appendChild(g);
+    drag.ghost = g;
+    drag.card.classList.add("dragging");
+  }
+  function endGhost(){
+    if(drag && drag.ghost) drag.ghost.remove();
+    document.querySelectorAll(".card.dragging").forEach(n => n.classList.remove("dragging"));
+    clearHighlight();
+  }
+  function teardown(){
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onCancel);
+  }
+  function onDown(e){
+    if(e.button && e.button !== 0) return;
+    const card = e.target.closest(".card");
+    const slot = e.target.closest(".slot");
+    const pool = e.target.closest(".pool");
+    if(!card && !slot && !pool) return;
+    drag = {
+      id:e.pointerId, card:card || null, slot:(card?null:slot), pool:(card?null:pool),
+      areaId: card ? card.dataset.area : null,
+      startX:e.clientX, startY:e.clientY, offX:0, offY:0, moved:false, ghost:null
+    };
+    if(card){
+      const r = card.getBoundingClientRect();
+      drag.offX = e.clientX - r.left; drag.offY = e.clientY - r.top;
+      e.preventDefault();
+    }
+    window.addEventListener("pointermove", onMove, {passive:false});
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onCancel);
+  }
+  function onMove(e){
+    if(!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.startX, dy = e.clientY - drag.startY;
+    if(!drag.moved){
+      if(Math.hypot(dx, dy) < 6) return;
+      drag.moved = true;
+      if(drag.card){ state.selected = null; startGhost(); }
+    }
+    if(drag.card && drag.ghost){
+      drag.ghost.style.left = (e.clientX - drag.offX) + "px";
+      drag.ghost.style.top  = (e.clientY - drag.offY) + "px";
+      highlightUnder(e.clientX, e.clientY);
+      e.preventDefault();
+    }
+  }
+  function onUp(e){
+    if(!drag || e.pointerId !== drag.id) return;
+    teardown();
+    const d = drag;
+    if(d.card && d.moved){
+      const t = resolveTarget(e.clientX, e.clientY);
+      endGhost();
+      drag = null;
+      const areaId = d.areaId;
+      if(t && t.type === "slot"){
+        moveToSlot(areaId, t.index);
+        afterPlacementChange();
+        live("Placed " + title(areaId) + " in " + SLOT_TIER[t.index] + ".");
+        focusSlot(t.index);
+      } else if(t && t.type === "pool"){
+        returnToPool(areaId);
+        afterPlacementChange();
+        live("Returned " + title(areaId) + " to the tray.");
+        focusArea(areaId);
+      } else {
+        renderDiamond(); // snapped back, no change
+      }
+    } else {
+      drag = null;
+      if(d.card) tapCard(d.areaId);
+      else if(d.slot && !d.slot.querySelector(".card")) tapEmptySlot(Number(d.slot.dataset.slot));
+      else if(d.pool) tapPool();
+    }
+  }
+  function onCancel(e){
+    if(!drag || e.pointerId !== drag.id) return;
+    teardown(); endGhost(); drag = null; renderDiamond();
+  }
+  function onKey(e){
+    if(e.key !== "Enter" && e.key !== " " && e.key !== "Spacebar") return;
+    const card = e.target.closest(".card");
+    if(card){ e.preventDefault(); tapCard(card.dataset.area); return; }
+    const slot = e.target.closest(".slot");
+    if(slot && !slot.querySelector(".card")){ e.preventDefault(); tapEmptySlot(Number(slot.dataset.slot)); return; }
+    if(e.target.id === "pool"){ e.preventDefault(); tapPool(); }
+  }
+
+  /* ---------- Render: readback tiers ---------- */
+  function renderReadback(){
+    const wrap = $("#readback-list");
+    wrap.textContent = "";
+    TIERS.forEach(([label, idx]) => {
+      const items = h("div", {"class":"tier-items"});
+      idx.forEach(i => { const a = BY_ID[state.slots[i]]; if(a) items.append(h("span", {"class":"chip", text:a.title})); });
+      wrap.append(h("div", {"class":"tier"}, h("div", {"class":"tier-label", text:label}), items));
+    });
+  }
+
+  /* ---------- Render: outline ---------- */
+  function renderOutline(){
+    const list = $("#cap-list");
+    list.textContent = "";
+    state.capacities.forEach(cap => {
+      const del = h("button", {"class":"cap-del", type:"button", "aria-label":"Remove " + cap.text}, "×");
+      del.addEventListener("click", () => removeCap(cap.id));
+      list.append(h("li", {"class":"cap-item"}, h("span", {"class":"cap-text", text:cap.text}), del));
+    });
+    const n = state.capacities.length;
+    $("#cap-count").textContent = n ? (n + (n === 1 ? " item so far" : " items so far")) : "";
+    $("#outline-need").style.display = (n >= 4) ? "none" : "";
+    updateOutlineNext();
+  }
+  function updateOutlineNext(){ $("#outline-next").disabled = state.capacities.length < 4; }
+
+  function addCap(text){
+    const v = text.trim().replace(/\s+/g, " ");
+    if(!v) return false;
+    if(state.capacities.some(c => c.text.toLowerCase() === v.toLowerCase())) return "dup";
+    if(state.capacities.length >= 16){ live("That is plenty to work with."); return false; }
+    state.capacities.push({ id: ++capSeq, text: v });
+    renderOutline();
+    return true;
+  }
+  function removeCap(id){
+    state.capacities = state.capacities.filter(c => c.id !== id);
+    delete state.marks[id];
+    renderOutline();
+  }
+
+  /* ---------- Render: mark ---------- */
+  function renderMark(){
+    const wrap = $("#mark-list");
+    wrap.textContent = "";
+    state.capacities.forEach(cap => {
+      const opts = h("div", {"class":"mark-opts", "role":"group", "aria-label":"How AI affects " + cap.text});
+      [["threat","At threat"],["amplify","Can be amplified"],["both","Both"]].forEach(([val,label]) => {
+        const on = state.marks[cap.id] === val;
+        const dotClass = "dot " + val;
+        const b = h("button", {
+          "class":"opt" + (on ? " on" : ""), "data-opt":val, type:"button",
+          "aria-pressed": on ? "true" : "false"
+        }, h("span", {"class":dotClass, "aria-hidden":true}), h("span", {text:label}));
+        b.addEventListener("click", () => { state.marks[cap.id] = val; renderMark(); updateMarkNext(); });
+        opts.append(b);
+      });
+      wrap.append(h("div", {"class":"mark-row"}, h("div", {"class":"mark-cap", text:cap.text}), opts));
+    });
+    updateMarkNext();
+  }
+  function updateMarkNext(){
+    const all = state.capacities.length > 0 && state.capacities.every(c => state.marks[c.id]);
+    $("#mark-next").disabled = !all;
+  }
+
+  /* ---------- Render: insight ---------- */
+  function renderInsight(){
+    const both = state.capacities.filter(c => state.marks[c.id] === "both");
+    const hasBoth = both.length > 0;
+    $("#insight-both").hidden = !hasBoth;
+    $("#insight-none").hidden = hasBoth;
+    const list = $("#both-list");
+    list.textContent = "";
+    if(hasBoth) both.forEach(c => list.append(h("div", {"class":"both-card", text:c.text})));
+  }
+
+  /* ---------- Summary (copy + print) ---------- */
+  function summaryLines(){
+    const tierLine = ([label, idx]) =>
+      [label, idx.map(i => title(state.slots[i]) || "—").join(", ")];
+    const both = state.capacities.filter(c => state.marks[c.id] === "both");
+    return {
+      tiers: TIERS.map(tierLine),
+      caps: state.capacities.map(c => [c.text, MARK_TEXT[state.marks[c.id]] || "not marked"]),
+      insight: both.length
+        ? 'The ones marked "both" are the whole point. Whether AI threatens or amplifies them comes down to how the task is set.'
+        : "Even the ones split into threat or amplify can flip, depending on how the task is set."
+    };
+  }
+  function buildSummaryText(){
+    const s = summaryLines();
+    let out = "What really matters — my thinking\n";
+    out += "From the AI literacy thinking tool\n\n";
+    out += "DIAMOND 9 — nine areas of AI, ranked\n";
+    s.tiers.forEach(([label, items]) => { out += label + ": " + items + "\n"; });
+    out += "\nWHAT I WANT A PUPIL TO BECOME — AND WHAT AI DOES TO IT\n";
+    s.caps.forEach(([text, mark]) => { out += "- " + text + ": " + mark + "\n"; });
+    out += "\nTHE INSIGHT\n" + s.insight + "\n";
+    out += "\nA good curriculum is built around the second list, and uses the first only to serve it.\n";
+    return out;
+  }
+  function buildPrintSummary(){
+    const s = summaryLines();
+    const root = $("#print-summary");
+    root.textContent = "";
+    root.append(h("h2", {text:"What really matters — my thinking"}));
+    root.append(h("p", {text:"From the AI literacy thinking tool"}));
+
+    root.append(h("h3", {text:"Diamond 9 — nine areas of AI, ranked"}));
+    s.tiers.forEach(([label, items]) =>
+      root.append(h("p", {"class":"p-tier"}, h("span", {"class":"p-label", text:label + ": "}), items)));
+
+    root.append(h("h3", {text:"What I want a pupil to become — and what AI does to it"}));
+    s.caps.forEach(([text, mark]) =>
+      root.append(h("p", {"class":"p-tier"}, h("span", {"class":"p-label", text:text + ": "}), mark)));
+
+    root.append(h("h3", {text:"The insight"}));
+    root.append(h("p", {text:s.insight}));
+    root.append(h("p", {text:"A good curriculum is built around the second list, and uses the first only to serve it."}));
+  }
+
+  let toastTimer = null;
+  function toast(msg){
+    const t = $("#toast");
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.hidden = true; }, 2400);
+  }
+  function copyWork(){
+    const text = buildSummaryText();
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(() => toast("Copied to clipboard"), () => fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
+  }
+  function fallbackCopy(text){
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed"; ta.style.top = "-1000px";
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    toast(ok ? "Copied to clipboard" : "Press Ctrl/Cmd+C to copy");
+  }
+
+  /* ---------- Screen navigation ---------- */
+  const RENDERERS = {
+    "rank": renderDiamond,
+    "rank-readback": renderReadback,
+    "outline": renderOutline,
+    "mark": renderMark,
+    "insight": renderInsight
+  };
+  function updateProgress(){
+    const stage = STAGE[state.screen];
+    document.querySelectorAll("#steps li").forEach((li, idx) => {
+      const done = idx < stage;
+      const current = idx === stage;
+      li.classList.toggle("done", done);
+      li.classList.toggle("current", current);
+      if(current) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
+    });
+  }
+  function showScreen(name){
+    state.screen = name;
+    state.selected = null;
+    endGhost();
+    ORDER.forEach(s => { const sec = document.getElementById("screen-" + s); if(sec) sec.hidden = (s !== name); });
+    $("#topbar").hidden = (name === "welcome");
+    updateProgress();
+    if(RENDERERS[name]) RENDERERS[name]();
+    window.scrollTo(0, 0);
+    const heading = document.querySelector("#screen-" + name + " h1");
+    if(heading) heading.focus();
+  }
+  function go(name){ showScreen(name); }
+  function back(){
+    const i = ORDER.indexOf(state.screen);
+    if(i > 0) showScreen(ORDER[i - 1]);
+  }
+
+  /* ---------- Wire up ---------- */
+  function init(){
+    // Diamond interactions (delegated; the container persists across re-renders)
+    const area = $("#diamond-area");
+    area.addEventListener("pointerdown", onDown);
+    area.addEventListener("keydown", onKey);
+
+    $("#begin").addEventListener("click", () => go("rank"));
+    $("#rank-next").addEventListener("click", () => { if(allPlaced()) go("rank-readback"); });
+    $("#readback-next").addEventListener("click", () => go("outline"));
+    $("#outline-next").addEventListener("click", () => { if(state.capacities.length >= 4) go("mark"); });
+    $("#mark-next").addEventListener("click", () => {
+      if(state.capacities.every(c => state.marks[c.id])) go("insight");
+    });
+    $("#insight-next").addEventListener("click", () => go("close"));
+    document.querySelectorAll("[data-back]").forEach(b => b.addEventListener("click", back));
+
+    // Outline form
+    const form = $("#cap-form"), input = $("#cap-input");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const res = addCap(input.value);
+      if(res === "dup"){
+        input.classList.add("flash"); input.select();
+        setTimeout(() => input.classList.remove("flash"), 600);
+        return;
+      }
+      if(res) { input.value = ""; }
+      input.focus();
+    });
+
+    // Close tools
+    $("#copy-btn").addEventListener("click", copyWork);
+    $("#print-btn").addEventListener("click", () => { buildPrintSummary(); window.print(); });
+
+    showScreen("welcome");
+  }
+
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+
+})();
+</script>
+</body>
+</html>
