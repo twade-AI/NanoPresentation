@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="description" content="A calm, guided thinking tool for building a KS3 AI curriculum. Nothing is collected or sent.">
-<title>What really matters — a thinking tool for AI literacy</title>
+<title>Pedtech Partnership Nano Presentation — AI at the heart of the KS3 Curriculum</title>
 <style>
 /* ---------- Palette and type ---------- */
 :root{
@@ -121,6 +121,12 @@ main{ display:block; }
 :focus-visible{ outline:3px solid var(--teal); outline-offset:2px; }
 
 .welcome-actions{ margin-top:1.75rem; }
+.welcome-inner{ text-align:center; display:flex; flex-direction:column; align-items:center; gap:1.4rem; }
+.welcome-inner h1{ max-width:24ch; }
+.welcome-inner .lede{ max-width:34ch; }
+.welcome-logos{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
+  gap:clamp(1.25rem,5vw,3rem); }
+.welcome-logo{ height:clamp(64px,13vw,108px); width:auto; display:block; }
 .nav-foot{
   width:100%; max-width:var(--maxw); margin:1.75rem auto 0;
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
@@ -147,21 +153,41 @@ main{ display:block; }
 .card.selected{ outline:3px solid var(--terra); outline-offset:2px; box-shadow:var(--shadow); }
 .card.dragging{ opacity:.32; }
 .card.ghost{
-  position:fixed; z-index:1000; margin:0; pointer-events:none;
+  position:fixed; z-index:1000; margin:0; pointer-events:none; overflow:hidden;
   box-shadow:0 16px 36px rgba(38,35,56,.24); transform:scale(1.04);
 }
 
 /* ---------- Pool + diamond ---------- */
 #diamond-area{ margin-top:1.25rem; }
+.diamond-stage{ display:flex; flex-direction:column; align-items:center; gap:1.25rem; }
+.pool-tray{ width:100%; }
+.pool-label{ margin:0 0 .4rem; text-align:center; color:var(--muted); font-size:.78rem;
+  font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
 .pool{
-  display:flex; flex-wrap:wrap; gap:var(--gap); justify-content:center;
-  padding:.85rem; background:#fff; border:1px solid var(--line);
-  border-radius:var(--radius); min-height:70px; position:relative;
+  display:flex; flex-wrap:nowrap; overflow-x:auto; gap:var(--gap); justify-content:flex-start;
+  padding:.7rem; background:#fff; border:1px solid var(--line);
+  border-radius:var(--radius); min-height:64px; -webkit-overflow-scrolling:touch;
 }
+.pool .card{ flex:0 0 auto; width:clamp(116px,40vw,148px); }
+.pool .card .card-gloss{ display:none; }            /* compact cards in the tray */
 .pool.drop-target{ border-color:var(--teal); background:var(--tealtint); }
-.pool-empty{ color:var(--muted); font-size:.9rem; align-self:center; margin:0; padding:.5rem; }
+.pool-empty{ color:var(--muted); font-size:.9rem; margin:0; padding:.5rem; white-space:nowrap; }
 
-.diamond{ display:flex; flex-direction:column; align-items:center; gap:var(--gap); margin-top:1.5rem; }
+.diamond{ display:flex; flex-direction:column; align-items:center; gap:var(--gap); }
+
+/* Wide screens: the tray becomes a column to the right of the diamond */
+@media (min-width:760px){
+  .diamond-stage{ flex-direction:row; align-items:flex-start; justify-content:center;
+    gap:clamp(1rem,3vw,2.25rem); }
+  .diamond{ order:1; --cardw:clamp(88px,17vw,140px); --cardh:clamp(88px,17vw,124px); }
+  .pool-tray{ order:2; width:clamp(170px,24vw,232px); flex:0 0 auto; }
+  .pool{ flex-wrap:wrap; overflow:visible; justify-content:center; }
+  .pool .card{ width:100%; }
+}
+
+/* Completed: hide the tray and let the diamond grow to fill the screen */
+.diamond-stage.complete .pool-tray{ display:none; }
+.diamond-stage.complete .diamond{ --cardw:clamp(104px,30vw,200px); --cardh:clamp(104px,30vw,168px); }
 .d-row{ display:flex; gap:var(--gap); justify-content:center; }
 .d-label{ font-size:.8rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
 .d-label.d-top{ color:var(--terra); margin-bottom:.2rem; }
@@ -252,6 +278,21 @@ main{ display:block; }
 .consider ul{ margin:0; padding-left:1.15rem; }
 .consider li{ margin:.35rem 0; }
 
+/* ---------- Justify ---------- */
+.justify{ display:flex; flex-direction:column; gap:1.6rem; margin-top:1.5rem; }
+.justify-row{ display:flex; flex-direction:column; gap:.6rem; }
+.mini-card{ display:inline-flex; align-items:center; gap:.55rem; align-self:flex-start;
+  background:#fff; border:1px solid var(--line); border-radius:12px; padding:.5rem .8rem;
+  box-shadow:var(--shadow-soft); max-width:100%; }
+.mini-tier{ color:var(--terra); font-weight:700; font-size:.7rem; letter-spacing:.05em;
+  text-transform:uppercase; flex:none; }
+.mini-letter{ color:var(--terra); font-weight:700; flex:none; }
+.mini-title{ font-weight:700; color:var(--ink); }
+.justify-label{ font-weight:600; color:var(--ink); }
+.justify-input{ font:inherit; width:100%; padding:.7em .9em; min-height:84px;
+  border:1.5px solid var(--line); border-radius:12px; background:#fff; color:var(--ink); resize:vertical; }
+.justify-input:focus{ outline:3px solid var(--teal); outline-offset:1px; border-color:var(--teal); }
+
 /* ---------- Toast ---------- */
 .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
   background:var(--ink); color:#fff; padding:.7em 1.15em; border-radius:999px;
@@ -299,10 +340,13 @@ main{ display:block; }
 
   <!-- 1. Welcome -->
   <section class="screen center" id="screen-welcome" aria-labelledby="w-h">
-    <div class="screen-inner">
-      <p class="eyebrow">Before we talk about AI</p>
-      <h1 id="w-h" tabindex="-1">What really matters</h1>
-      <p class="lede">Nine areas of AI, and a question about what really matters. This will take about ten minutes, and works best if you argue with yourself as you go.</p>
+    <div class="screen-inner welcome-inner">
+      <h1 id="w-h" tabindex="-1">Pedtech Partnership Nano Presentation: AI at the heart of the KS3 Curriculum</h1>
+      <div class="welcome-logos">
+        <img class="welcome-logo" src="haileybury-logo.png" alt="Haileybury" width="2000" height="1414" decoding="async">
+        <img class="welcome-logo" src="pedtech-partnership-logo.jpg" alt="The National PedTech Partnership" width="1208" height="864" decoding="async">
+      </div>
+      <p class="lede">Thank you for coming to this Nano Presentation! Let's have some great conversations!</p>
       <div class="welcome-actions"><button class="btn btn-primary" id="begin">Begin</button></div>
     </div>
   </section>
@@ -311,10 +355,9 @@ main{ display:block; }
   <section class="screen" id="screen-rank" hidden aria-labelledby="r-h">
     <div class="screen-inner">
       <h1 id="r-h" tabindex="-1">Rank the nine</h1>
-      <p class="lede">Drag each area into the diamond — most important at the top, least at the bottom. Just place them; there is no debate yet.</p>
+      <p class="lede">Drag each area into the diamond — most important at the top, least at the bottom. Discuss with the person next to you as you complete this task, justify your decisions.</p>
       <p class="hint">On a touchscreen you can also tap a card, then tap a slot. Dropping a card on a filled slot swaps the two.</p>
       <div id="diamond-area"></div>
-      <p class="footnote">There is no right answer. The disagreement is the point.</p>
     </div>
     <div class="nav-foot">
       <button class="btn btn-quiet" data-back>Back</button>
@@ -322,7 +365,31 @@ main{ display:block; }
     </div>
   </section>
 
-  <!-- 2b. Ranking readback -->
+  <!-- 2b. Justify the extremes -->
+  <section class="screen" id="screen-rank-justify" hidden aria-labelledby="j-h">
+    <div class="screen-inner">
+      <h1 id="j-h" tabindex="-1">Why those two?</h1>
+      <p class="lede">Ranking is the easy part. Justifying is where it gets real. Put your reasoning into words.</p>
+      <div class="justify">
+        <div class="justify-row">
+          <div class="justify-card" id="justify-top-card"></div>
+          <label class="justify-label" for="justify-top">Why did this go at the top, as the most important?</label>
+          <textarea id="justify-top" class="justify-input" rows="3" maxlength="600" placeholder="A sentence or two is plenty."></textarea>
+        </div>
+        <div class="justify-row">
+          <div class="justify-card" id="justify-bottom-card"></div>
+          <label class="justify-label" for="justify-bottom">Why did this go at the bottom, as the least important?</label>
+          <textarea id="justify-bottom" class="justify-input" rows="3" maxlength="600" placeholder="A sentence or two is plenty."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="nav-foot">
+      <button class="btn btn-quiet" data-back>Back</button>
+      <button class="btn btn-primary" id="justify-next" disabled>Continue</button>
+    </div>
+  </section>
+
+  <!-- 2c. Ranking readback -->
   <section class="screen" id="screen-rank-readback" hidden aria-labelledby="rb-h">
     <div class="screen-inner">
       <h1 id="rb-h" tabindex="-1">Your ranking</h1>
@@ -461,8 +528,8 @@ main{ display:block; }
   ];
   const MARK_TEXT = { threat:"at threat", amplify:"can be amplified", both:"both — the task decides" };
 
-  const ORDER = ["welcome","rank","rank-readback","outline","mark","insight","close"];
-  const STAGE = { "welcome":-1, "rank":0, "rank-readback":0, "outline":1, "mark":2, "insight":3, "close":4 };
+  const ORDER = ["welcome","rank","rank-justify","rank-readback","outline","mark","insight","close"];
+  const STAGE = { "welcome":-1, "rank":0, "rank-justify":0, "rank-readback":0, "outline":1, "mark":2, "insight":3, "close":4 };
 
   /* ---------- State (memory only; no storage API used) ---------- */
   function shuffle(arr){
@@ -476,7 +543,8 @@ main{ display:block; }
     slots: new Array(9).fill(null),       // slot index -> area id or null
     selected: null,                       // area id selected for tap-to-place
     capacities: [],                       // [{id, text}]
-    marks: {}                             // capacity id -> "threat"|"amplify"|"both"
+    marks: {},                            // capacity id -> "threat"|"amplify"|"both"
+    justify: { top: "", bottom: "" }      // reasons for the most/least important
   };
   let capSeq = 0;
 
@@ -524,7 +592,14 @@ main{ display:block; }
   function renderDiamond(){
     const root = $("#diamond-area");
     root.textContent = "";
+    const complete = allPlaced();
 
+    const stage = h("div", {"class":"diamond-stage" + (complete ? " complete" : "")});
+
+    // Tray of unplaced cards: to the right of the diamond on wide screens, a strip
+    // above it on narrow ones, and hidden once the diamond is complete.
+    const tray = h("div", {"class":"pool-tray"});
+    tray.append(h("p", {"class":"pool-label", text:"Cards to place"}));
     const pool = h("div", {"class":"pool", id:"pool", "role":"group",
       "tabindex":"0", "aria-label":"Tray of cards still to place. With a card selected, activate to return it here."});
     const unplaced = state.order.filter(id => !isPlaced(id));
@@ -533,6 +608,7 @@ main{ display:block; }
     } else {
       unplaced.forEach(id => pool.append(cardEl(BY_ID[id], "In the tray")));
     }
+    tray.append(pool);
 
     const dia = h("div", {"class":"diamond"});
     dia.append(h("div", {"class":"d-label d-top", text:"Most important"}));
@@ -554,7 +630,10 @@ main{ display:block; }
     });
     dia.append(h("div", {"class":"d-label d-bottom", text:"Least important"}));
 
-    root.append(pool, dia);
+    // Tray first in the DOM (natural reading/tab order: cards, then slots);
+    // CSS moves it to the right of the diamond on wide screens.
+    stage.append(tray, dia);
+    root.append(stage);
     updateRankNext();
   }
 
@@ -591,6 +670,28 @@ main{ display:block; }
 
   function afterPlacementChange(){ renderDiamond(); updateRankNext(); }
   function updateRankNext(){ $("#rank-next").disabled = !allPlaced(); }
+
+  /* ---------- Justify the top and bottom ---------- */
+  function miniCard(area, tierLabel){
+    return h("div", {"class":"mini-card"},
+      h("span", {"class":"mini-tier", text:tierLabel}),
+      h("span", {"class":"mini-letter", "aria-hidden":true, text:area.id}),
+      h("span", {"class":"mini-title", text:area.title}));
+  }
+  function renderJustify(){
+    const top = BY_ID[state.slots[0]], bottom = BY_ID[state.slots[8]];
+    const tc = $("#justify-top-card"); tc.textContent = "";
+    if(top) tc.append(miniCard(top, "Most important"));
+    const bc = $("#justify-bottom-card"); bc.textContent = "";
+    if(bottom) bc.append(miniCard(bottom, "Least important"));
+    $("#justify-top").value = state.justify.top;
+    $("#justify-bottom").value = state.justify.bottom;
+    updateJustifyNext();
+  }
+  function updateJustifyNext(){
+    const done = state.justify.top.trim().length > 0 && state.justify.bottom.trim().length > 0;
+    $("#justify-next").disabled = !done;
+  }
 
   /* ---------- Tap-to-place / keyboard ---------- */
   function tapCard(areaId){
@@ -835,6 +936,12 @@ main{ display:block; }
     const both = state.capacities.filter(c => state.marks[c.id] === "both");
     return {
       tiers: TIERS.map(tierLine),
+      reasoning: {
+        topTitle: title(state.slots[0]) || "—",
+        bottomTitle: title(state.slots[8]) || "—",
+        top: state.justify.top.trim(),
+        bottom: state.justify.bottom.trim()
+      },
       caps: state.capacities.map(c => [c.text, MARK_TEXT[state.marks[c.id]] || "not marked"]),
       insight: both.length
         ? 'The ones marked "both" are the whole point. What makes AI threaten or amplify them is not the tool — it is the task you set.'
@@ -843,10 +950,13 @@ main{ display:block; }
   }
   function buildSummaryText(){
     const s = summaryLines();
-    let out = "What really matters — my thinking\n";
-    out += "From the AI literacy thinking tool\n\n";
+    let out = "AI at the heart of the KS3 Curriculum — my notes\n";
+    out += "From the Pedtech Partnership Nano Presentation\n\n";
     out += "DIAMOND 9 — nine areas of AI, ranked\n";
     s.tiers.forEach(([label, items]) => { out += label + ": " + items + "\n"; });
+    out += "\nWHY MY TOP AND BOTTOM\n";
+    out += "Most important — " + s.reasoning.topTitle + ": " + (s.reasoning.top || "(not given)") + "\n";
+    out += "Least important — " + s.reasoning.bottomTitle + ": " + (s.reasoning.bottom || "(not given)") + "\n";
     out += "\nWHAT I WANT A PUPIL TO BECOME — AND WHAT AI DOES TO IT\n";
     s.caps.forEach(([text, mark]) => { out += "- " + text + ": " + mark + "\n"; });
     out += "\nTHE INSIGHT\n" + s.insight + "\n";
@@ -860,12 +970,16 @@ main{ display:block; }
     const s = summaryLines();
     const root = $("#print-summary");
     root.textContent = "";
-    root.append(h("h2", {text:"What really matters — my thinking"}));
-    root.append(h("p", {text:"From the AI literacy thinking tool"}));
+    root.append(h("h2", {text:"AI at the heart of the KS3 Curriculum — my notes"}));
+    root.append(h("p", {text:"From the Pedtech Partnership Nano Presentation"}));
 
     root.append(h("h3", {text:"Diamond 9 — nine areas of AI, ranked"}));
     s.tiers.forEach(([label, items]) =>
       root.append(h("p", {"class":"p-tier"}, h("span", {"class":"p-label", text:label + ": "}), items)));
+
+    root.append(h("h3", {text:"Why my top and bottom"}));
+    root.append(h("p", {"class":"p-tier"}, h("span", {"class":"p-label", text:"Most important — " + s.reasoning.topTitle + ": "}), s.reasoning.top || "(not given)"));
+    root.append(h("p", {"class":"p-tier"}, h("span", {"class":"p-label", text:"Least important — " + s.reasoning.bottomTitle + ": "}), s.reasoning.bottom || "(not given)"));
 
     root.append(h("h3", {text:"What I want a pupil to become — and what AI does to it"}));
     s.caps.forEach(([text, mark]) =>
@@ -913,6 +1027,7 @@ main{ display:block; }
   /* ---------- Screen navigation ---------- */
   const RENDERERS = {
     "rank": renderDiamond,
+    "rank-justify": renderJustify,
     "rank-readback": renderReadback,
     "outline": renderOutline,
     "mark": renderMark,
@@ -954,7 +1069,10 @@ main{ display:block; }
     area.addEventListener("keydown", onKey);
 
     $("#begin").addEventListener("click", () => go("rank"));
-    $("#rank-next").addEventListener("click", () => { if(allPlaced()) go("rank-readback"); });
+    $("#rank-next").addEventListener("click", () => { if(allPlaced()) go("rank-justify"); });
+    $("#justify-top").addEventListener("input", (e) => { state.justify.top = e.target.value; updateJustifyNext(); });
+    $("#justify-bottom").addEventListener("input", (e) => { state.justify.bottom = e.target.value; updateJustifyNext(); });
+    $("#justify-next").addEventListener("click", () => { if(!$("#justify-next").disabled) go("rank-readback"); });
     $("#readback-next").addEventListener("click", () => go("outline"));
     $("#outline-next").addEventListener("click", () => { if(state.capacities.length >= 4) go("mark"); });
     $("#mark-next").addEventListener("click", () => {
