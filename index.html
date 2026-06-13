@@ -235,12 +235,22 @@ main{ display:block; }
 .both-list{ display:flex; flex-direction:column; gap:.6rem; margin-top:1.5rem; }
 .both-card{ background:var(--warm); border:1px solid #EAD8CC; border-radius:14px;
   padding:.9rem 1.1rem; font-weight:700; font-size:1.05rem; }
+.answer{ color:var(--terra); font-weight:700; font-size:clamp(1.05rem,1rem + .5vw,1.25rem);
+  max-width:34ch; margin:1.25rem 0 0; }
+.example{ color:var(--muted); font-style:italic; font-size:.92rem; line-height:1.5;
+  max-width:46ch; margin:1rem 0 0; }
 
 /* ---------- Close ---------- */
 .cta{ display:inline-block; background:var(--terra); color:#fff; font-weight:700;
   text-decoration:none; padding:.85em 1.5em; border-radius:999px; margin:.25rem 0 1.5rem; }
 .cta:hover{ background:#c6612d; }
 .close-tools{ display:flex; flex-wrap:wrap; gap:.7rem; }
+.consider{ background:var(--warm); border:1px solid #EAD8CC; border-radius:14px;
+  padding:1rem 1.2rem; margin:0 0 1.5rem; }
+.consider-label{ color:var(--terra); font-weight:700; text-transform:uppercase;
+  letter-spacing:.05em; font-size:.8rem; margin:0 0 .5rem; }
+.consider ul{ margin:0; padding-left:1.15rem; }
+.consider li{ margin:.35rem 0; }
 
 /* ---------- Toast ---------- */
 .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
@@ -330,7 +340,7 @@ main{ display:block; }
   <section class="screen" id="screen-outline" hidden aria-labelledby="o-h">
     <div class="screen-inner">
       <h1 id="o-h" tabindex="-1">The human outline</h1>
-      <p class="lede">Forget AI for a moment. Write the characters, skills and virtues you want a pupil to leave KS3 with.</p>
+      <p class="lede">Forget AI for a moment. Write the characters, skills and values you want a pupil to leave KS3 with.</p>
       <form id="cap-form" class="cap-form" autocomplete="off">
         <label class="visually-hidden" for="cap-input">Add a character, skill or virtue</label>
         <input id="cap-input" type="text" placeholder="e.g. courage, critical thinking, teamwork" maxlength="60" enterkeyhint="done">
@@ -369,11 +379,15 @@ main{ display:block; }
     <div class="screen-inner">
       <h1 id="i-h" tabindex="-1">The insight</h1>
       <div id="insight-both" hidden>
-        <p class="lede big">The ones you marked <strong>both</strong> are the whole point. Whether AI threatens or amplifies these comes down to one thing: how the task is set.</p>
+        <p class="lede big">So what makes AI threaten these or amplify them?</p>
         <div id="both-list" class="both-list"></div>
+        <p class="answer">Not the tool. The task you build around it.</p>
+        <p class="example">Set "write the essay", and AI does the thinking. Set "take apart the AI's essay", and it makes them think harder. Same capacity, opposite result.</p>
       </div>
       <div id="insight-none" hidden>
-        <p class="lede big">Even the ones you split into threat or amplify can flip, depending on how the task is set.</p>
+        <p class="lede big">So what makes AI threaten or amplify any of these?</p>
+        <p class="answer">Not the tool. The task you build around it.</p>
+        <p class="example">Even the ones you split into threat or amplify can flip. Set "write the essay", and AI does the thinking. Set "take apart the AI's essay", and it makes them think harder.</p>
       </div>
     </div>
     <div class="nav-foot">
@@ -386,8 +400,16 @@ main{ display:block; }
   <section class="screen" id="screen-close" hidden aria-labelledby="c-h">
     <div class="screen-inner">
       <h1 id="c-h" tabindex="-1">Where this goes</h1>
-      <p class="lede">You ranked nine areas of AI by importance. Then you wrote down what you actually want a pupil to become. A good curriculum is built around the second list, and uses the first only to serve it.</p>
-      <p><a class="cta" href="https://twade-ai.github.io/Digital-Innovations" target="_blank" rel="noopener noreferrer">See a curriculum built this way</a></p>
+      <p class="lede">We ranked nine areas of AI by importance. Then we wrote down what we actually want a pupil to become.</p>
+      <div class="consider">
+        <p class="consider-label">Things to consider</p>
+        <ul>
+          <li>Is this reflected in our KS3 curriculums?</li>
+          <li>How can we develop these across subjects?</li>
+          <li>Should these things be taught as a standalone topic or across departments?</li>
+        </ul>
+      </div>
+      <p><a class="cta" href="https://twade-ai.github.io/Digital-Innovations" target="_blank" rel="noopener noreferrer">Link to Haileybury's Digital Innovations Course</a></p>
       <div class="close-tools">
         <button class="btn btn-secondary" id="copy-btn" type="button">Copy my work</button>
         <button class="btn btn-secondary" id="print-btn" type="button">Print</button>
@@ -815,7 +837,7 @@ main{ display:block; }
       tiers: TIERS.map(tierLine),
       caps: state.capacities.map(c => [c.text, MARK_TEXT[state.marks[c.id]] || "not marked"]),
       insight: both.length
-        ? 'The ones marked "both" are the whole point. Whether AI threatens or amplifies them comes down to how the task is set.'
+        ? 'The ones marked "both" are the whole point. What makes AI threaten or amplify them is not the tool — it is the task you set.'
         : "Even the ones split into threat or amplify can flip, depending on how the task is set."
     };
   }
@@ -828,7 +850,10 @@ main{ display:block; }
     out += "\nWHAT I WANT A PUPIL TO BECOME — AND WHAT AI DOES TO IT\n";
     s.caps.forEach(([text, mark]) => { out += "- " + text + ": " + mark + "\n"; });
     out += "\nTHE INSIGHT\n" + s.insight + "\n";
-    out += "\nA good curriculum is built around the second list, and uses the first only to serve it.\n";
+    out += "\nTHINGS TO CONSIDER\n";
+    out += "- Is this reflected in our KS3 curriculums?\n";
+    out += "- How can we develop these across subjects?\n";
+    out += "- Should these things be taught as a standalone topic or across departments?\n";
     return out;
   }
   function buildPrintSummary(){
@@ -848,7 +873,13 @@ main{ display:block; }
 
     root.append(h("h3", {text:"The insight"}));
     root.append(h("p", {text:s.insight}));
-    root.append(h("p", {text:"A good curriculum is built around the second list, and uses the first only to serve it."}));
+    root.append(h("h3", {text:"Things to consider"}));
+    const cons = h("ul");
+    ["Is this reflected in our KS3 curriculums?",
+     "How can we develop these across subjects?",
+     "Should these things be taught as a standalone topic or across departments?"]
+      .forEach(q => cons.append(h("li", {text:q})));
+    root.append(cons);
   }
 
   let toastTimer = null;
