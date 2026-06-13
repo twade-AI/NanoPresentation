@@ -129,6 +129,8 @@ main{ display:block; }
 .welcome-logo{ width:auto; display:block; }
 .welcome-logo-hby{ height:clamp(58px,11vw,92px); }
 .welcome-logo-pedtech{ height:clamp(116px,24vw,196px); }
+.welcome-title{ width:min(540px,100%); margin:0 auto; overflow:hidden; aspect-ratio:1587 / 779; }
+.welcome-title-img{ width:100%; display:block; margin-top:-30.7%; }
 .nav-foot{
   width:100%; max-width:var(--maxw); margin:1.75rem auto 0;
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
@@ -213,6 +215,7 @@ main{ display:block; }
 .tier-label{ flex:0 0 8.5rem; color:var(--terra); font-weight:700; font-size:.85rem;
   text-transform:uppercase; letter-spacing:.04em; }
 .tier-items{ display:flex; flex-wrap:wrap; gap:.4rem; }
+.tier-just{ flex-basis:100%; color:var(--muted); font-style:italic; font-size:.9rem; margin:.3rem 0 0; }
 .chip{ background:var(--tealtint); color:var(--ink); border-radius:999px;
   padding:.25em .8em; font-size:.9rem; }
 .hold{ margin-top:1.5rem; color:var(--muted); font-style:italic; }
@@ -249,7 +252,7 @@ main{ display:block; }
 .tag-opt[data-kind="both"] .ochip-dot{ background:linear-gradient(90deg,var(--terra) 0 50%, var(--ink) 50% 100%); }
 .tag-opt.on{ border-color:var(--ink); background:#F4F2F8; }
 
-.outline-figure{ display:grid; grid-template-columns:1fr minmax(108px,184px) 1fr;
+.outline-figure{ display:grid; grid-template-columns:1fr minmax(130px,260px) 1fr;
   grid-template-areas:"both both both" "values figure skills"; gap:.5rem .7rem; align-items:start; margin-top:1.25rem; }
 .zone-both{ grid-area:both; }
 .zone-values{ grid-area:values; }
@@ -282,7 +285,7 @@ main{ display:block; }
 
 @media (max-width:519px){
   .outline-figure{ grid-template-columns:1fr; grid-template-areas:"figure" "both" "values" "skills"; }
-  .figure-img{ max-width:148px; margin:0 auto; }
+  .figure-img{ max-width:200px; margin:0 auto; }
   .zone-chips{ justify-content:center !important; }
   .zone-label{ text-align:center !important; }
 }
@@ -403,7 +406,7 @@ main{ display:block; }
   <!-- 1. Welcome -->
   <section class="screen center" id="screen-welcome" aria-labelledby="w-h">
     <div class="screen-inner welcome-inner">
-      <h1 id="w-h" tabindex="-1">Pedtech Partnership Nano Presentation:<br>AI at the heart of the KS3 Curriculum</h1>
+      <h1 id="w-h" class="welcome-title" tabindex="-1"><img class="welcome-title-img" src="pedtech-welcome.png" alt="Pedtech Partnership Nano Presentation: AI at the heart of the KS3 Curriculum" width="1587" height="2245" decoding="async"></h1>
       <div class="welcome-logos">
         <img class="welcome-logo welcome-logo-hby" src="haileybury-logo.png" alt="Haileybury" width="2000" height="1414" decoding="async">
         <img class="welcome-logo welcome-logo-pedtech" src="pedtech-partnership-stacked.png" alt="The National PedTech Partnership" width="1414" height="2000" decoding="async">
@@ -431,9 +434,7 @@ main{ display:block; }
   <!-- 2b. Justify the extremes -->
   <section class="screen" id="screen-rank-justify" hidden aria-labelledby="j-h">
     <div class="screen-inner">
-      <h1 id="j-h" tabindex="-1">Why those two?</h1>
-      <p class="lede">Ranking is the easy part. Justifying is where it gets real. Put your reasoning into words.</p>
-      <p class="hint dictate-hint"><svg class="mic-ico" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="21.5"/></svg>Prefer to speak? Tap the microphone on your keyboard to dictate instead of typing.</p>
+      <h1 id="j-h" tabindex="-1">Justify your choices</h1>
       <div class="justify">
         <div class="justify-row">
           <div class="justify-card" id="justify-top-card"></div>
@@ -484,7 +485,6 @@ main{ display:block; }
         <button class="tag-opt" data-kind="skill" type="button" role="radio" aria-checked="false"><span class="ochip-dot" aria-hidden="true"></span>Skill</button>
       </div>
       <p class="hint dictate-hint"><svg class="mic-ico" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="21.5"/></svg>Prefer to speak? Tap the microphone on your keyboard to dictate instead of typing.</p>
-      <p class="hint">One short phrase at a time. Most people get to eight or ten. They gather around the figure as you go. <span id="cap-count" class="count"></span></p>
       <div class="outline-figure">
         <div class="zone zone-both"><p class="zone-label">Both</p><div class="zone-chips" id="chips-both"></div></div>
         <div class="zone zone-values"><p class="zone-label">Values</p><div class="zone-chips" id="chips-value"></div></div>
@@ -935,6 +935,10 @@ main{ display:block; }
     TIERS.forEach(([label, idx]) => {
       const items = h("div", {"class":"tier-items"});
       idx.forEach(i => { const a = BY_ID[state.slots[i]]; if(a) items.append(h("span", {"class":"chip", text:a.title})); });
+      let just = "";
+      if(idx.includes(0)) just = state.justify.top.trim();
+      else if(idx.includes(8)) just = state.justify.bottom.trim();
+      if(just) items.append(h("p", {"class":"tier-just", text:"“" + just + "”"}));
       wrap.append(h("div", {"class":"tier"}, h("div", {"class":"tier-label", text:label}), items));
     });
   }
@@ -962,7 +966,7 @@ main{ display:block; }
       if(b) b.append(chipEl(cap));
     });
     const n = state.capacities.length;
-    $("#cap-count").textContent = n ? (n + (n === 1 ? " item so far" : " items so far")) : "";
+    const cc = $("#cap-count"); if(cc) cc.textContent = n ? (n + (n === 1 ? " item so far" : " items so far")) : "";
     $("#outline-need").style.display = (n >= 4) ? "none" : "";
     updateOutlineNext();
   }
