@@ -21,7 +21,7 @@
   --threat:#D64541;
   --amplify:#3FA34D;
 
-  --serif: Georgia, "Times New Roman", serif;
+  --serif: ui-serif, "New York", "Iowan Old Style", "Palatino Linotype", Palatino, Charter, Cambria, Georgia, serif;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   --maxw: 760px;
@@ -46,8 +46,8 @@ body{
   line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
-h1{ font-family:var(--serif); font-weight:700; line-height:1.15; letter-spacing:.01em;
-    font-size:clamp(1.55rem, 1.2rem + 2.2vw, 2.3rem); margin:0 0 .6rem; }
+h1{ font-family:var(--serif); font-weight:600; line-height:1.12; letter-spacing:-.015em;
+    font-optical-sizing:auto; font-size:clamp(1.6rem, 1.2rem + 2.4vw, 2.45rem); margin:0 0 .6rem; }
 h1:focus{ outline:none; }
 p{ margin:0 0 1rem; }
 strong{ font-weight:700; }
@@ -126,7 +126,9 @@ main{ display:block; }
 .welcome-inner .lede{ max-width:34ch; }
 .welcome-logos{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
   gap:clamp(1.25rem,5vw,3rem); }
-.welcome-logo{ height:clamp(64px,13vw,108px); width:auto; display:block; }
+.welcome-logo{ width:auto; display:block; }
+.welcome-logo-hby{ height:clamp(58px,11vw,92px); }
+.welcome-logo-pedtech{ height:clamp(116px,24vw,196px); }
 .nav-foot{
   width:100%; max-width:var(--maxw); margin:1.75rem auto 0;
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
@@ -295,6 +297,15 @@ main{ display:block; }
   border:1.5px solid var(--line); border-radius:12px; background:#fff; color:var(--ink); resize:vertical; }
 .justify-input:focus{ outline:3px solid var(--teal); outline-offset:1px; border-color:var(--teal); }
 
+/* ---------- Read aloud ---------- */
+.readaloud-btn{ display:flex; align-items:center; gap:.4rem; width:fit-content;
+  margin:0 0 1rem auto; font:inherit; font-size:.85rem; font-weight:600; color:var(--muted);
+  background:#fff; border:1.5px solid var(--line); border-radius:999px; padding:.4em .9em;
+  min-height:40px; cursor:pointer; }
+.readaloud-btn:hover{ border-color:var(--muted); color:var(--ink); }
+.readaloud-btn.on{ color:#fff; background:var(--teal); border-color:var(--teal); }
+.rl-ico{ flex:none; }
+
 /* ---------- Toast ---------- */
 .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
   background:var(--ink); color:#fff; padding:.7em 1.15em; border-radius:999px;
@@ -343,10 +354,10 @@ main{ display:block; }
   <!-- 1. Welcome -->
   <section class="screen center" id="screen-welcome" aria-labelledby="w-h">
     <div class="screen-inner welcome-inner">
-      <h1 id="w-h" tabindex="-1">Pedtech Partnership Nano Presentation: AI at the heart of the KS3 Curriculum</h1>
+      <h1 id="w-h" tabindex="-1">Pedtech Partnership Nano Presentation:<br>AI at the heart of the KS3 Curriculum</h1>
       <div class="welcome-logos">
-        <img class="welcome-logo" src="haileybury-logo.png" alt="Haileybury" width="2000" height="1414" decoding="async">
-        <img class="welcome-logo" src="pedtech-partnership-logo.jpg" alt="The National PedTech Partnership" width="1208" height="864" decoding="async">
+        <img class="welcome-logo welcome-logo-hby" src="haileybury-logo.png" alt="Haileybury" width="2000" height="1414" decoding="async">
+        <img class="welcome-logo welcome-logo-pedtech" src="pedtech-partnership-stacked.png" alt="The National PedTech Partnership" width="1414" height="2000" decoding="async">
       </div>
       <p class="lede">Thank you for coming to this Nano Presentation! Let's have some great conversations!</p>
       <div class="welcome-actions"><button class="btn btn-primary" id="begin">Begin</button></div>
@@ -1047,14 +1058,60 @@ main{ display:block; }
       if(current) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
     });
   }
+  /* ---------- Read aloud (speech synthesis; offline, nothing sent) ---------- */
+  const TTS = ("speechSynthesis" in window) ? window.speechSynthesis : null;
+  let readBtn = null, speaking = false;
+  function readableText(){
+    if(state.screen === "welcome")
+      return "Pedtech Partnership Nano Presentation. AI at the heart of the KS3 Curriculum. " +
+             "Thank you for coming to this Nano Presentation. Let's have some great conversations.";
+    const screen = document.getElementById("screen-" + state.screen);
+    if(!screen) return "";
+    const sel = "h1, p.lede, p.hold, p.answer, p.example, .key-item, label.justify-label, .consider-label, .consider li";
+    const parts = [];
+    screen.querySelectorAll(sel).forEach(el => {
+      if(el.closest("[hidden]")) return;
+      const t = el.textContent.replace(/\s+/g, " ").trim();
+      if(t) parts.push(t);
+    });
+    return parts.join(". ");
+  }
+  function setReadLabel(on){
+    if(!readBtn) return;
+    readBtn.classList.toggle("on", on);
+    readBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    const t = readBtn.querySelector(".rl-text"); if(t) t.textContent = on ? "Stop" : "Read aloud";
+  }
+  function stopSpeak(){ if(TTS) TTS.cancel(); speaking = false; setReadLabel(false); }
+  function toggleSpeak(){
+    if(!TTS) return;
+    if(speaking){ stopSpeak(); return; }
+    const text = readableText();
+    if(!text) return;
+    TTS.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "en-GB"; u.rate = 1; u.pitch = 1;
+    u.onend = () => { speaking = false; setReadLabel(false); };
+    u.onerror = () => { speaking = false; setReadLabel(false); };
+    speaking = true; setReadLabel(true);
+    TTS.speak(u);
+  }
+  function placeReadButton(){
+    if(!readBtn) return;
+    const inner = document.querySelector("#screen-" + state.screen + " .screen-inner");
+    if(inner && readBtn.parentNode !== inner) inner.insertBefore(readBtn, inner.firstChild);
+  }
+
   function showScreen(name){
     state.screen = name;
     state.selected = null;
     endGhost();
+    stopSpeak();
     ORDER.forEach(s => { const sec = document.getElementById("screen-" + s); if(sec) sec.hidden = (s !== name); });
     $("#topbar").hidden = (name === "welcome");
     updateProgress();
     if(RENDERERS[name]) RENDERERS[name]();
+    placeReadButton();
     window.scrollTo(0, 0);
     const heading = document.querySelector("#screen-" + name + " h1");
     if(heading) heading.focus();
@@ -1071,6 +1128,17 @@ main{ display:block; }
     const area = $("#diamond-area");
     area.addEventListener("pointerdown", onDown);
     area.addEventListener("keydown", onKey);
+
+    // Read-aloud control (created only if the browser supports speech synthesis)
+    if(TTS){
+      readBtn = document.createElement("button");
+      readBtn.className = "readaloud-btn";
+      readBtn.type = "button";
+      readBtn.setAttribute("aria-pressed", "false");
+      readBtn.setAttribute("aria-label", "Read this page aloud");
+      readBtn.innerHTML = '<svg class="rl-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6.5a8 8 0 0 1 0 11"/></svg><span class="rl-text">Read aloud</span>';
+      readBtn.addEventListener("click", toggleSpeak);
+    }
 
     $("#begin").addEventListener("click", () => go("rank"));
     $("#rank-next").addEventListener("click", () => { if(allPlaced()) go("rank-justify"); });
