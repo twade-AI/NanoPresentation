@@ -67,12 +67,13 @@ a{ color:var(--teal); }
 .topbar{
   position:sticky; top:0; z-index:50;
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
-  padding:.55rem clamp(1rem,4vw,2rem);
-  background:rgba(251,250,253,.92);
-  backdrop-filter:saturate(1.1) blur(6px);
+  padding:.5rem clamp(1rem,4vw,2rem);
+  background:#fff;
   border-bottom:1px solid var(--line);
 }
-.brand{ font-size:.82rem; color:var(--muted); letter-spacing:.02em; }
+.logos{ display:flex; align-items:center; gap:clamp(.5rem,2vw,.85rem); min-width:0; }
+.logo{ height:clamp(28px,6.5vw,42px); width:auto; display:block; }
+.logo-divider{ width:1px; height:26px; background:var(--line); flex:none; }
 .steps{ list-style:none; display:flex; gap:clamp(.5rem,2vw,1.1rem); margin:0; padding:0; }
 .steps li{ display:flex; align-items:center; gap:.4rem; color:var(--muted); font-size:.82rem; }
 .steps .dot{
@@ -83,7 +84,7 @@ a{ color:var(--teal); }
 .steps li.current .dot{ border-color:var(--terra); background:var(--terra);
   box-shadow:0 0 0 4px rgba(217,115,63,.15); }
 .steps li.current{ color:var(--ink); font-weight:600; }
-@media (max-width:560px){ .steps .lbl{ display:none; } .brand{ display:none; } }
+@media (max-width:560px){ .steps .lbl{ display:none; } .logo-divider{ display:none; } }
 
 /* ---------- Screen scaffolding ---------- */
 main{ display:block; }
@@ -271,7 +272,11 @@ main{ display:block; }
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="topbar" id="topbar" hidden>
-  <span class="brand">AI literacy · a thinking tool</span>
+  <div class="logos">
+    <img class="logo" src="haileybury-logo.png" alt="Haileybury" width="2000" height="1414" decoding="async">
+    <span class="logo-divider" aria-hidden="true"></span>
+    <img class="logo" src="pedtech-partnership-logo.jpg" alt="The National PedTech Partnership" width="1208" height="864" decoding="async">
+  </div>
   <ol class="steps" id="steps" aria-label="Progress through the four stages">
     <li data-stage="0"><span class="dot" aria-hidden="true"></span><span class="lbl">Rank</span></li>
     <li data-stage="1"><span class="dot" aria-hidden="true"></span><span class="lbl">Outline</span></li>
