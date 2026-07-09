@@ -122,7 +122,7 @@ main{ display:block; }
 .welcome-actions{ margin-top:1.75rem; }
 .welcome-inner{ text-align:center; display:flex; flex-direction:column; align-items:center; gap:1.4rem; }
 .welcome-inner h1{ max-width:24ch; }
-.welcome-inner .lede{ max-width:34ch; }
+.welcome-inner .lede{ max-width:40ch; }
 .welcome-logos{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap;
   gap:clamp(1.25rem,5vw,3rem); }
 .welcome-logo{ width:auto; display:block; }
@@ -424,7 +424,7 @@ main{ display:block; }
         <img class="welcome-logo welcome-logo-hby" src="haileybury-logo.png" alt="Haileybury" width="2000" height="1414" decoding="async">
         <img class="welcome-logo welcome-logo-pedtech" src="pedtech-partnership-logo.jpg" alt="The National PedTech Partnership" width="1208" height="864" decoding="async">
       </div>
-      <p class="lede">Thank you for coming to this Nano Presentation! Let's have some great conversations!</p>
+      <p class="lede">How do we build an AI curriculum that is relevant and important to pupils?</p>
       <div class="welcome-actions"><button class="btn btn-primary" id="begin">Begin</button></div>
     </div>
   </section>
@@ -1230,7 +1230,7 @@ main{ display:block; }
   function readableText(){
     if(state.screen === "welcome")
       return "Apple Distinguished Schools K–12 Global Summit. " +
-             "Thank you for coming to this Nano Presentation. Let's have some great conversations.";
+             "How do we build an AI curriculum that is relevant and important to pupils?";
     const screen = document.getElementById("screen-" + state.screen);
     if(!screen) return "";
     const sel = "h1, p.lede, p.hold, p.answer, p.example, .key-item, label.justify-label, .consider-label, .consider li";
