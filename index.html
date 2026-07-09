@@ -167,11 +167,11 @@ main{ display:block; }
 .pool-label{ margin:0 0 .4rem; text-align:center; color:var(--muted); font-size:.78rem;
   font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
 .pool{
-  display:flex; flex-wrap:nowrap; overflow-x:auto; gap:var(--gap); justify-content:flex-start;
+  display:flex; flex-wrap:wrap; gap:var(--gap); justify-content:center;
   padding:.7rem; background:#fff; border:1px solid var(--line);
-  border-radius:var(--radius); min-height:64px; -webkit-overflow-scrolling:touch;
+  border-radius:var(--radius); min-height:64px;
 }
-.pool .card{ flex:0 0 auto; width:clamp(116px,40vw,148px); }
+.pool .card{ flex:0 0 auto; width:clamp(98px,29vw,132px); }
 .pool .card .card-gloss{ display:none; }            /* compact cards in the tray */
 .pool.drop-target{ border-color:var(--teal); background:var(--tealtint); }
 .pool-empty{ color:var(--muted); font-size:.9rem; margin:0; padding:.5rem; white-space:nowrap; }
@@ -191,6 +191,15 @@ main{ display:block; }
 /* Completed: hide the tray and let the diamond grow to fill the screen */
 .diamond-stage.complete .pool-tray{ display:none; }
 .diamond-stage.complete .diamond{ --cardw:clamp(104px,30vw,200px); --cardh:clamp(104px,30vw,168px); }
+.diamond-status{ text-align:center; color:var(--muted); font-size:.92rem; margin:0 auto .9rem;
+  max-width:44ch; min-height:1.4em; }
+.diamond-status.active{ color:var(--teal); font-weight:600; }
+.diamond-stage.picking .slot.empty{ border-color:var(--teal); background:var(--tealtint);
+  box-shadow:0 0 0 3px rgba(47,143,131,.16); }
+@media (prefers-reduced-motion: no-preference){
+  .diamond-stage.picking .slot.empty{ animation:slotpulse 1.5s ease-in-out infinite; }
+  @keyframes slotpulse{ 0%,100%{ box-shadow:0 0 0 2px rgba(47,143,131,.12); } 50%{ box-shadow:0 0 0 5px rgba(47,143,131,.30); } }
+}
 .d-row{ display:flex; gap:var(--gap); justify-content:center; }
 .d-label{ font-size:.8rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
 .d-label.d-top{ color:var(--terra-text); margin-bottom:.2rem; }
@@ -426,7 +435,7 @@ main{ display:block; }
       <h1 id="r-h" tabindex="-1">What should we be teaching our KS3 pupils?</h1>
       <p class="lede">In considering the vast landscape of AI for KS3 students, there are loads of ‘essential’ subjects to cover.</p>
       <p class="lede">Please organise the topics provided below according to their level of importance for a KS3 curriculum.</p>
-      <p class="hint">On a touchscreen you can also tap a card, then tap a slot. Dropping a card on a filled slot swaps the two.</p>
+      <p class="hint">On a phone, the easiest way is to tap a card, then tap an open slot. You can also drag; dropping on a filled slot swaps the two.</p>
       <div id="diamond-area"></div>
     </div>
     <div class="nav-foot">
@@ -671,12 +680,21 @@ main{ display:block; }
     return c;
   }
 
+  function diamondStatus(){
+    if(state.selected != null)
+      return "“" + title(state.selected) + "” is ready — tap an open slot to place it, or tap it again to cancel.";
+    if(allPlaced()) return "All nine placed. Tap a card, then a slot, to rearrange.";
+    return "Tap a card, then tap an open slot. You can also drag.";
+  }
   function renderDiamond(){
     const root = $("#diamond-area");
     root.textContent = "";
     const complete = allPlaced();
+    const picking = state.selected != null;
 
-    const stage = h("div", {"class":"diamond-stage" + (complete ? " complete" : "")});
+    root.append(h("p", {"class":"diamond-status" + (picking ? " active" : "")}, diamondStatus()));
+
+    const stage = h("div", {"class":"diamond-stage" + (complete ? " complete" : "") + (picking ? " picking" : "")});
 
     // Tray of unplaced cards: to the right of the diamond on wide screens, a strip
     // above it on narrow ones, and hidden once the diamond is complete.
@@ -699,7 +717,7 @@ main{ display:block; }
       row.forEach(i => {
         const occ = state.slots[i];
         const slot = h("div", {
-          "class":"slot", "data-slot": String(i), "role":"button",
+          "class": "slot" + (occ ? "" : " empty"), "data-slot": String(i), "role":"button",
           "tabindex": occ ? "-1" : "0",
           "aria-label": occ
             ? (SLOT_TIER[i] + " slot, holding " + title(occ) + ".")
