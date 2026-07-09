@@ -435,7 +435,7 @@ main{ display:block; }
       <h1 id="r-h" tabindex="-1">What should we be teaching our KS3 pupils?</h1>
       <p class="lede">In considering the vast landscape of AI for KS3 students, there are loads of ‘essential’ subjects to cover.</p>
       <p class="lede">Please organise the topics provided below according to their level of importance for a KS3 curriculum.</p>
-      <p class="hint">On a phone, the easiest way is to tap a card, then tap an open slot. You can also drag; dropping on a filled slot swaps the two.</p>
+      <p class="hint">On a phone, tap the cards in your order of importance — each drops into the next open spot. To move one, tap it, then tap another slot. You can also drag.</p>
       <div id="diamond-area"></div>
     </div>
     <div class="nav-foot">
@@ -682,9 +682,9 @@ main{ display:block; }
 
   function diamondStatus(){
     if(state.selected != null)
-      return "“" + title(state.selected) + "” is ready — tap an open slot to place it, or tap it again to cancel.";
+      return "“" + title(state.selected) + "” is ready — tap a slot to move it, or tap it again to cancel.";
     if(allPlaced()) return "All nine placed. Tap a card, then a slot, to rearrange.";
-    return "Tap a card, then tap an open slot. You can also drag.";
+    return "Tap a card to drop it into the next open spot. You can also drag.";
   }
   function renderDiamond(){
     const root = $("#diamond-area");
@@ -795,9 +795,21 @@ main{ display:block; }
 
   /* ---------- Tap-to-place / keyboard ---------- */
   function tapCard(areaId){
+    // One-tap place: a card in the tray, with nothing picked up, drops straight into
+    // the next open slot (top to bottom). Placed cards still pick up so you can move them.
+    if(slotIndexOf(areaId) < 0 && state.selected == null){
+      const to = state.slots.indexOf(null);
+      if(to >= 0){
+        moveToSlot(areaId, to);
+        afterPlacementChange();
+        live("Placed " + title(areaId) + " in " + SLOT_TIER[to] + ".");
+        focusSlot(to);
+        return;
+      }
+    }
     if(state.selected == null){
       state.selected = areaId;
-      live("Picked up " + title(areaId) + ". Now choose a slot, or tap the tray.");
+      live("Picked up " + title(areaId) + ". Tap a slot to move it, or the tray to remove it.");
     } else if(state.selected === areaId){
       state.selected = null;
       live("Put down " + title(areaId) + ".");
