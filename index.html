@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="description" content="A calm, guided thinking tool for building a KS3 AI curriculum. Nothing is collected or sent.">
-<title>Pedtech Partnership Nano Presentation — AI at the heart of the KS3 Curriculum</title>
+<title>Apple Distinguished Schools K–12 Global Summit — AI at the heart of the KS3 Curriculum</title>
 <style>
 /* ---------- Palette and type ---------- */
 :root{
@@ -129,7 +129,7 @@ main{ display:block; }
 .welcome-logo-hby{ height:clamp(52px,11vw,80px); }
 .welcome-logo-pedtech{ height:clamp(52px,11vw,80px); }
 .welcome-title{ margin:0 auto; max-width:min(560px,100%); }
-.welcome-title-img{ width:100%; height:auto; display:block; }
+.welcome-title-img{ width:100%; height:auto; display:block; border-radius:14px; box-shadow:var(--shadow-soft); }
 .nav-foot{
   width:100%; max-width:var(--maxw); margin:1.75rem auto 0;
   display:flex; align-items:center; justify-content:space-between; gap:1rem;
@@ -410,7 +410,7 @@ main{ display:block; }
   <!-- 1. Welcome -->
   <section class="screen center" id="screen-welcome" aria-labelledby="w-h">
     <div class="screen-inner welcome-inner">
-      <h1 id="w-h" class="welcome-title" tabindex="-1"><img class="welcome-title-img" src="pedtech-welcome.png" alt="Pedtech Partnership Nano Presentation: AI at the heart of the KS3 Curriculum" width="1587" height="863" decoding="async"></h1>
+      <h1 id="w-h" class="welcome-title" tabindex="-1"><img class="welcome-title-img" src="welcome-banner.jpg" alt="Apple Distinguished Schools K–12 Global Summit, 9–10 July 2026" width="2752" height="1114" decoding="async"></h1>
       <div class="welcome-logos">
         <img class="welcome-logo welcome-logo-hby" src="haileybury-logo.png" alt="Haileybury" width="2000" height="1414" decoding="async">
         <img class="welcome-logo welcome-logo-pedtech" src="pedtech-partnership-logo.jpg" alt="The National PedTech Partnership" width="1208" height="864" decoding="async">
@@ -1089,7 +1089,7 @@ main{ display:block; }
   function buildSummaryText(){
     const s = summaryLines();
     let out = "AI at the heart of the KS3 Curriculum — my notes\n";
-    out += "From the Pedtech Partnership Nano Presentation\n\n";
+    out += "From the Apple Distinguished Schools K–12 Global Summit\n\n";
     out += "DIAMOND 9 — nine areas of AI, ranked\n";
     s.tiers.forEach(([label, items]) => { out += label + ": " + items + "\n"; });
     out += "\nWHY MY TOP AND BOTTOM\n";
@@ -1109,7 +1109,7 @@ main{ display:block; }
     const root = $("#print-summary");
     root.textContent = "";
     root.append(h("h2", {text:"AI at the heart of the KS3 Curriculum — my notes"}));
-    root.append(h("p", {text:"From the Pedtech Partnership Nano Presentation"}));
+    root.append(h("p", {text:"From the Apple Distinguished Schools K–12 Global Summit"}));
 
     root.append(h("h3", {text:"Diamond 9 — nine areas of AI, ranked"}));
     s.tiers.forEach(([label, items]) =>
@@ -1199,7 +1199,7 @@ main{ display:block; }
   function loadVoices(){ chosenVoice = pickVoice(); }
   function readableText(){
     if(state.screen === "welcome")
-      return "Pedtech Partnership Nano Presentation. AI at the heart of the KS3 Curriculum. " +
+      return "Apple Distinguished Schools K–12 Global Summit. " +
              "Thank you for coming to this Nano Presentation. Let's have some great conversations.";
     const screen = document.getElementById("screen-" + state.screen);
     if(!screen) return "";
